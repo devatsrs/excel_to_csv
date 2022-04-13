@@ -1,0 +1,26 @@
+
+pip install -r requirements.txt --user
+
+https://packaging.python.org/en/latest/tutorials/installing-packages/
+https://www.w3schools.com/python/python_pip.asp
+
+pip list
+pip install lxml --user
+
+
+python -m unittest tests/test_string_methods.py
+
+cd runtests
+python -m unittest    test_import_xls.py
+
+https://github.com/bccp/runtests
+
+
+https://stackoverflow.com/questions/69381312/in-vs-code-importerror-cannot-import-name-mapping-from-collections
+
+from collections import Mapping
+to
+from collections.abc import Mapping
+
+
+create a setup.py for saparate env to udpate installed packages
