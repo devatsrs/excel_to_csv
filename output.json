@@ -1,0 +1,376 @@
+[
+    {
+        "table_name": "AKG",
+        "column_metadata": [
+            {
+                "type": "Any",
+                "id": "SKU"
+            },
+            {
+                "type": "Any",
+                "id": "Category"
+            },
+            {
+                "type": "Any",
+                "id": "Model Number"
+            },
+            {
+                "type": "Any",
+                "id": "Status"
+            },
+            {
+                "type": "Any",
+                "id": "Product Description Long"
+            },
+            {
+                "type": "Numeric",
+                "id": "MSRP"
+            },
+            {
+                "type": "Numeric",
+                "id": " MAP"
+            },
+            {
+                "type": "Numeric",
+                "id": "Dealer"
+            },
+            {
+                "type": "Any",
+                "id": "Master Pack Qty"
+            },
+            {
+                "type": "Numeric",
+                "id": "UPC"
+            },
+            {
+                "type": "Numeric",
+                "id": "EAN"
+            },
+            {
+                "type": "Numeric",
+                "id": "WEIGHT (lb.)"
+            },
+            {
+                "type": "Numeric",
+                "id": "DIM L (in.)"
+            },
+            {
+                "type": "Numeric",
+                "id": "DIM W (in.)"
+            },
+            {
+                "type": "Numeric",
+                "id": "DIM H (in.)"
+            },
+            {
+                "type": "Any",
+                "id": "COUNTRY OF ORIGIN"
+            },
+            {
+                "type": "Any",
+                "id": "TAA Compliant"
+            },
+            {
+                "type": "Any",
+                "id": "LINK"
+            }
+        ],
+        "table_data": [
+            [
+                "Wired Microphones-Recording",
+                "USB",
+                "C44-USB",
+                "AKG-C22-USB"
+            ],
+            [
+                "",
+                "",
+                "Wired Mics",
+                "Wired Mics"
+            ],
+            [
+                "",
+                "",
+                "C44-USB",
+                "AKG-C22-USB"
+            ],
+            [
+                "",
+                "",
+                "",
+                "NEW"
+            ],
+            [
+                "",
+                "",
+                "Lyra USB Microphone",
+            "ARA USB Microphone"
+            ],
+            [
+                "",
+                "",
+                206.7375,
+                140.0
+            ],
+            [
+                "",
+                "",
+                149.0,
+                99.0
+            ],
+            [
+                "",
+                "",
+                124.0425,
+                69.3
+            ],
+            [
+                "",
+                "",
+                "",
+                ""
+            ],
+            [
+                "",
+                "",
+                885038040804.0,
+                885038048442.0
+            ],
+            [
+                "",
+                "",
+                9002761048308.0,
+                9002761048452.0
+            ],
+            [
+                "",
+                "",
+                2.03,
+                2.13
+            ],
+            [
+                "",
+                "",
+                4.25,
+                7.165
+            ],
+            [
+                "",
+                "",
+                4.79,
+                4.48
+            ],
+            [
+                "",
+                "",
+                9.72,
+                8.7
+            ],
+            [
+                "",
+                "",
+                "CN",
+                "CN"
+            ],
+            [
+                "",
+                "",
+                "Non Compliant",
+                "Non Compliant"
+            ],
+            [
+                "",
+                "",
+                "",
+                ""
+            ]
+        ]
+    },
+    {
+        "table_name": "AMX",
+        "column_metadata": [
+            {
+                "type": "Any",
+                "id": "SKU"
+            },
+            {
+                "type": "Any",
+                "id": "Category"
+            },
+            {
+                "type": "Any",
+                "id": "Model Number"
+            },
+            {
+                "type": "Any",
+                "id": "Status"
+            },
+            {
+                "type": "Any",
+                "id": "Product Description Long"
+            },
+            {
+                "type": "Numeric",
+                "id": "MSRP"
+            },
+            {
+                "type": "Numeric",
+                "id": " MAP"
+            },
+            {
+                "type": "Numeric",
+                "id": "Dealer"
+            },
+            {
+                "type": "Numeric",
+                "id": "Master Pack Qty"
+            },
+            {
+                "type": "Any",
+                "id": "UPC"
+            },
+            {
+                "type": "Any",
+                "id": "EAN"
+            },
+            {
+                "type": "Numeric",
+                "id": "WEIGHT (lb.)"
+            },
+            {
+                "type": "Numeric",
+                "id": "DIM L (in.)"
+            },
+            {
+                "type": "Numeric",
+                "id": "DIM W (in.)"
+            },
+            {
+                "type": "Numeric",
+                "id": "DIM H (in.)"
+            },
+            {
+                "type": "Any",
+                "id": "COUNTRY OF ORIGIN"
+            },
+            {
+                "type": "Any",
+                "id": "TAA Compliant"
+            },
+            {
+                "type": "Any",
+                "id": "LINK"
+            }
+        ],
+        "table_data": [
+            [
+                "AMX-FG1906-0202",
+                "AMX-FG1906-0402",
+                "FG039-18",
+                "FG1010-710"
+            ],
+            [
+                "All-in-One Pres Switchers",
+                "All-in-One Pres Switchers",
+                "User Interface Accessories",
+                "Digital Switchers"
+            ],
+            [
+                "DVX-2265-4K-TAA",
+                "DVX-3266-4K-TAA",
+                "CB-MXSA-07",
+                "CTP-1301"
+            ],
+            [
+                "NEW",
+                "NEW",
+                "",
+                ""
+            ],
+            [
+                "DVX 6 x 2+1 All-In-One Presentation Switcher",
+                "DVX 8 x 4+2 All-In-One Presentation Switcher",
+                "Rough-In Box & Cover Plate for the 7\" Wall-Mount Modero G5 & Modero S Touch Panels.\\xa0 Also fits 7” Acendo Book & RoomBook.",
+                "CTP-1301"
+            ],
+            [
+                7770.000000000001,
+                9990.0,
+                222.00000000000003,
+                1476.3000000000002
+            ],
+            [
+                7770.000000000001,
+                9990.0,
+                222.00000000000003,
+                1030.0
+            ],
+            [
+                3885.0000000000005,
+                4995.0,
+                111.00000000000001,
+                515.0
+            ],
+            [
+                22.0,
+                "",
+                "",
+                ""
+            ],
+            [
+                "718878026434",
+                "718878026465.0",
+                "718878022931.0",
+                "718878009840.0"
+            ],
+            [
+                "",
+                "",
+                "",
+                ""
+            ],
+            [
+                "",
+                "",
+                2.0,
+                ""
+            ],
+            [
+                "",
+                "",
+                9.0,
+                ""
+            ],
+            [
+                "",
+                "",
+                11.0,
+                ""
+            ],
+            [
+                "",
+                "",
+                2.0,
+                ""
+            ],
+            [
+                "TW",
+                "TW",
+                "",
+                "MX"
+            ],
+            [
+                "Compliant",
+                "Compliant",
+                "",
+                "Compliant"
+            ],
+            [
+                "",
+                "",
+                "",
+                ""
+            ]
+        ]
+    }
+]

@@ -12,8 +12,8 @@ import messytables.excel
 import six
 from six.moves import zip
 
-import parse_data
-import import_utils
+from lib import parse_data
+from lib import import_utils
 
 log = logging.getLogger(__name__)
 
@@ -41,6 +41,7 @@ messytables.CSVRowSet._dialect = property(override_dialect)
 
 def parse_file(file_path, orig_name, parse_options=None, table_name_hint=None, num_rows=None):
     # pylint: disable=unused-argument
+    print(file_path)
     with open(file_path, "rb") as f:
         try:
             return parse_open_file(f, orig_name, table_name_hint=table_name_hint)

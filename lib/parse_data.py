@@ -12,7 +12,7 @@ import logging
 import re
 import messytables
 # TODO grist internal libraries might not be available to plugins in the future.
-import moment
+from lib import moment
 import six
 from six.moves import zip, xrange
 
