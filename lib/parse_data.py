@@ -202,7 +202,9 @@ class ColumnConverter(object):
 def get_table_data(row_set, num_columns, num_rows=0):
     converters = _guess_basic_types(row_set.sample, num_columns)
     col_converters = [ColumnConverter(c) for c in converters]
+    # print(col_converters)
     for num, row in enumerate(row_set):
+
         if num_rows and num == num_rows:
             break
 

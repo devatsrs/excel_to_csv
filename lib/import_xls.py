@@ -96,7 +96,7 @@ def parse_open_file(file_obj, orig_name, table_name_hint=None):
 
         table_data_with_types = parse_data.get_table_data(
             row_set, len(headers))
-
+        # print(table_data_with_types)
         # Identify and remove empty columns, and populate separate metadata and data lists.
         column_metadata = []
         table_data = []
