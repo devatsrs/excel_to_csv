@@ -4,6 +4,8 @@ from lib import import_xls
 import csv
 import pprint
 
+from lib.db import DB
+
 
 def _get_excce(filename, folder):
     return [os.path.dirname(__file__) + "/"+folder + "/" + filename, filename]
@@ -35,9 +37,9 @@ class XlsToCsv():
         header = []
         sheets = []
         # +1 for sheet name
-        cols = (len(self.parsed_data[1][0]["column_metadata"])) + 1
-        rows = (len(self.parsed_data[1][0]["table_data"][0]))
-        tables = (len(self.parsed_data[1]))  # sheets
+        # cols = (len(self.parsed_data[1][0]["column_metadata"])) + 1
+        # rows = (len(self.parsed_data[1][0]["table_data"][0]))
+        # tables = (len(self.parsed_data[1]))  # sheets
         # print(cols)
         # print(rows)
         # print(tables)
@@ -66,7 +68,7 @@ class XlsToCsv():
 
             # pprint.pprint(list(table_data1))
             # pprint.pprint((*x["table_data"]))
-            for col_index, table_data in enumerate(table_data1):
+            for table_data in table_data1:
                 _row = dict()
 
                 # print(table_data)
@@ -79,7 +81,8 @@ class XlsToCsv():
                     # csv_rows[sheet_index][row_index][col_index] = table_row_item
                     # print (f'csv_rows[{sheet_index}][{row_index}][{col_index}] = {table_row_item}')
                     # print (f'header[{col_index}]: {table_row_item}')
-                    _row.update({header[row_index]: table_row_item})
+                    if(len(header) > row_index):
+                        _row.update({header[row_index]: table_row_item})
 
                 # add sheet name as extra field
                 # and uppend row to csv  row
@@ -93,32 +96,34 @@ class XlsToCsv():
         # print(list(csv_rows))
 
         # header.pop()
-        header.append("sheet_name")
-        pprint.pprint(header)
-        pprint.pprint(csv_rows)
+        #csv header 
+        header.append("sheet_name") # ['name', 'area', 'country_code2', 'country_code3']
+        self.header = header
+        # self.csv_rows = csv_rows
+        # pprint.pprint(header)
+        # pprint.pprint(csv_rows)
         # exit()
-        # csv header    
-        fieldnames = ['name', 'area', 'country_code2', 'country_code3']
 
-        # csv data
-        __rows = [
-            {'name': 'Albania',
-             'area': 28748,
-             'country_code2': 'AL',
-             'country_code3': 'ALB'},
-            {'name': 'Algeria',
-             'area': 2381741,
-             'country_code2': 'DZ',
-             'country_code3': 'DZA'},
-            {'name': 'American Samoa',
-             'area': 199,
-             'country_code2': 'AS',
-             'country_code3': 'ASM'}
-        ]
+        # csv data example 
+        #   [
+        #     {'name': 'Albania',
+        #      'area': 28748,
+        #      'country_code2': 'AL',
+        #      'country_code3': 'ALB'},
+        #     {'name': 'Algeria',
+        #      'area': 2381741,
+        #      'country_code2': 'DZ',
+        #      'country_code3': 'DZA'},
+        #     {'name': 'American Samoa',
+        #      'area': 199,
+        #      'country_code2': 'AS',
+        #      'country_code3': 'ASM'}
+        # ]
         filename = (os.path.splitext(
             os.path.basename(self.filename))[0]) + ".csv"
         # print("filename " + filename)
         csvfilepath = _get_excce(filename, "csv")
+        self.csvfilepath = csvfilepath
         # print(csvfilepath)
         with open(csvfilepath[0], 'w', encoding='UTF8', newline='') as f:
             # writer = csv.DictWriter(f, fieldnames=fieldnames)
@@ -128,5 +133,14 @@ class XlsToCsv():
 
 
 xlsObj = XlsToCsv('test_excel.xlsx')
+# xlsObj = XlsToCsv('Harman Pro Pricing 010522.xlsx')
+# xlsObj = XlsToCsv("EAW Dealer Price List April 2022.xlsx")
+# xlsObj = XlsToCsv("DMR Price List 1-1-2022.xlsx")
+# xlsObj = XlsToCsv("AVR Pricelist - Roland Pro AV Jan 24th 2022.xlsm")
+# xlsObj = XlsToCsv("Visionary Solutions - Dealer Price List - Effective Feb 15 2022.xlsx")
 xlsObj.convert()
 xlsObj.write()
+
+db = DB()
+print(xlsObj.csvfilepath[0])
+db.insert(title="test_excel",columns=xlsObj.header,csvpath=os.path.normpath(xlsObj.csvfilepath[0]))
