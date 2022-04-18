@@ -4,7 +4,7 @@ from lib import import_xls
 import csv
 import pprint
 
-from lib.db import DB
+# from lib.db import DB
 
 
 def _get_excce(filename, folder):
