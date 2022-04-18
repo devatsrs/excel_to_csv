@@ -1,0 +1,10 @@
+sudo apt-get update
+sudo apt-get install python3.7
+sudo apt-get install python3-distutils
+sudo apt-get install python3-apt
+curl -O https://bootstrap.pypa.io/get-pip.py
+python3 get-pip.py --user
+python3 --version
+export PATH="$HOME/.local/bin:$PATH"
+pip --version
+sudo apt-get install python3.7-dev default-libmysqlclient-dev

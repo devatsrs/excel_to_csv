@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 from lib import import_xls
 import csv
 import pprint
@@ -7,24 +8,28 @@ import pprint
 # from lib.db import DB
 
 
-def _get_excce(filename, folder):
-    return [os.path.dirname(__file__) + "/"+folder + "/" + filename, filename]
+# def _get_excce(filename, folder):
+#     return [os.path.dirname(__file__) + "/"+folder + "/" + filename, filename]
 
 
 class XlsToCsv():
 
-    def __init__(self, filename):
-        self.filename = filename
+    def __init__(self, source_xls_path, dest_csv_path):
+        self.source_xls_path = os.path.abspath(source_xls_path)
+        self.dest_csv_path = os.path.abspath(dest_csv_path)
 
     def convert(self):
-        # # print(self.filename)
-        # filepath = os.path.dirname(__file__) + "/excel/" + self.filename
-        # print(self.filename)
-        filepath_n_name = _get_excce(self.filename, "excel")
+        # # print(self.source_xls_path)
+        # filepath = os.path.dirname(__file__) + "/excel/" + self.source_xls_path
+        # print(self.source_xls_path)
+        # filepath_n_name = _get_excce(self.source_xls_path, "excel")
+        # print(filepath_n_name)
+        filepath_n_name = [self.source_xls_path,os.path.basename(self.source_xls_path)]
         # print(filepath_n_name)
         # exit()
-        # parsed_file = import_xls.parse_file(*_get_excce(self.filename))
-        self.parsed_data = import_xls.parse_file(*filepath_n_name)
+        # parsed_file = import_xls.parse_file(*_get_excce(self.source_xls_path))
+        # self.parsed_data = import_xls.parse_file(*filepath_n_name)
+        self.parsed_data = import_xls.parse_file(file_path=self.source_xls_path,orig_name=os.path.basename(self.source_xls_path))
         # print(self.parsed_data[1])
         # exit()
 
@@ -119,20 +124,28 @@ class XlsToCsv():
         #      'country_code2': 'AS',
         #      'country_code3': 'ASM'}
         # ]
-        filename = (os.path.splitext(
-            os.path.basename(self.filename))[0]) + ".csv"
-        # print("filename " + filename)
-        csvfilepath = _get_excce(filename, "csv")
-        self.csvfilepath = csvfilepath
+        # filename = (os.path.splitext(
+        #     os.path.basename(self.source_xls_path))[0]) + ".csv"
+        # # print("filename " + filename)
+        # csvfilepath = _get_excce(filename, "csv")
+        # self.csvfilepath = csvfilepath
+        
         # print(csvfilepath)
-        with open(csvfilepath[0], 'w', encoding='UTF8', newline='') as f:
+        with open(self.dest_csv_path, 'w', encoding='UTF8', newline='') as f:
             # writer = csv.DictWriter(f, fieldnames=fieldnames)
             writer = csv.DictWriter(f, fieldnames=header)
             writer.writeheader()
             writer.writerows(csv_rows)
 
+# argument for souce filename 
+# argument for destination filename
+source_xls_path = sys.argv[1]
+dest_csv_path = sys.argv[2]
+print(source_xls_path)
+print(dest_csv_path)
 
-xlsObj = XlsToCsv('test_excel.xlsx')
+# xlsObj = XlsToCsv('test_excel.xlsx')
+xlsObj = XlsToCsv(source_xls_path , dest_csv_path)
 # xlsObj = XlsToCsv('Harman Pro Pricing 010522.xlsx')
 # xlsObj = XlsToCsv("EAW Dealer Price List April 2022.xlsx")
 # xlsObj = XlsToCsv("DMR Price List 1-1-2022.xlsx")
@@ -140,7 +153,10 @@ xlsObj = XlsToCsv('test_excel.xlsx')
 # xlsObj = XlsToCsv("Visionary Solutions - Dealer Price List - Effective Feb 15 2022.xlsx")
 xlsObj.convert()
 xlsObj.write()
-print (xlsObj.csvfilepath[0])
+# print (xlsObj.csvfilepath[0])
+
+
+
 
 # db = DB()
 # print(xlsObj.csvfilepath[0])

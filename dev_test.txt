@@ -1,3 +1,7 @@
+pip install
+
+https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/eb-cli3-install-linux.html
+
 
 pip install -r requirements3.txt --user
 
@@ -56,3 +60,4 @@ venv/Scripts/python  -m pip install -r requirements.txt
 
 python -m pip freeze
 python -m pip freeze > requirements.txt
+
