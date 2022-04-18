@@ -49,6 +49,10 @@ x = memoryview(bytes(5))	                        memoryview
 
 environment setup 
 
-py -m venv env
+https://realpython.com/python-virtual-environments-a-primer/
+py -m venv venv
 ./env/Scripts/activate
-py -m pip install -r requirements3.txt
+venv/Scripts/python  -m pip install -r requirements.txt
+
+python -m pip freeze
+python -m pip freeze > requirements.txt
