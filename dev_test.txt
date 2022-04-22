@@ -61,4 +61,17 @@ venv/Scripts/python  -m pip install -r requirements.txt
 python -m pip freeze
 python -m pip freeze > requirements.txt
 
-pip uninstall -y agate agate-dbf agate-excel agate-sql astroid asttokens Babel backports.functools-lru-cache certifi chardet charset-normalizer csvkit dbfread enum34 et-xmlfile future greenlet html5lib idna iso8601 isodate json-table-schema lazy-object-proxy leather lxml messytables olefile openpyxl parsedatetime python-dateutil python-magic python-slugify pytimeparse pytz requests roman singledispatch six sortedcontainers text-unidecode unittest-xml-reporting urllib3 webencodings wrapt xlrd 
+pip uninstall -y agate agate-dbf agate-excel agate-sql astroid asttokens Babel backports.functools-lru-cache certifi chardet charset-normalizer csvkit dbfread enum34 et-xmlfile future greenlet html5lib idna iso8601 isodate json-table-schema lazy-object-proxy leather lxml messytables olefile openpyxl parsedatetime python-dateutil python-magic python-slugify pytimeparse pytz requests roman singledispatch six sortedcontainers text-unidecode unittest-xml-reporting urllib3 webencodings wrapt xlrd SQLAlchemy
+
+
+---------- prod 
+sudo apt-get install python3-venv
+python3 -m venv venv
+sudo chown -R bitnami:daemon /opt/bitnami/apache/htdocs
+sudo chmod -R 775 /opt/bitnami/apache/htdocs
+sudo -u daemon /opt/bitnami/apache/htdocs/excel_to_csv/venv/bin/python3 /opt/bitnami/apache/htdocs/excel_to_csv/venv/bin/pip3 install -r requirements.txt
+sudo -u daemon /opt/bitnami/apache/htdocs/excel_to_csv/venv/bin/python3 /opt/bitnami/apache/htdocs/excel_to_csv/xls_to_csv.py /opt/bitnami/apache/htdocs/wp-content/uploads/sites/7/2022/04/DMR-Price-List-1-1-2022.xlsx /opt/bitnami/apache/htdocs/wp-content/uploads/sites/7/2022/04/DMR-Price-List-1-1-2022.csv
+
+
+
+/opt/bitnami/apache/htdocs/wp-content/uploads/sites/7/2022/04

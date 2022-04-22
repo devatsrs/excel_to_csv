@@ -74,7 +74,7 @@ class XlsToCsv():
             # pprint.pprint(list(table_data1))
             # pprint.pprint((*x["table_data"]))
             for table_data in table_data1:
-                _row = dict()
+                _row = dict() # {'name': 'Albania','area': 28748,   'country_code2': 'AL',  'country_code3': 'ALB'}
 
                 # print(table_data)
                 # print(x["table_data"][4][2])  # col , row
