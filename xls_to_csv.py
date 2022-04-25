@@ -15,11 +15,13 @@ import pprint
 class XlsToCsv():
 
     def __init__(self, source_xls_path, dest_csv_path):
-        self.source_xls_path = os.path.abspath(source_xls_path)
-        self.dest_csv_path = os.path.abspath(dest_csv_path)
+        self.source_xls_path = (source_xls_path)
+        self.dest_csv_path = (dest_csv_path)
+        # self.source_xls_path = os.path.abspath(source_xls_path)
+        # self.dest_csv_path = os.path.abspath(dest_csv_path)
 
     def convert(self):
-        # # print(self.source_xls_path)
+        # print(self.source_xls_path)
         # filepath = os.path.dirname(__file__) + "/excel/" + self.source_xls_path
         # print(self.source_xls_path)
         # filepath_n_name = _get_excce(self.source_xls_path, "excel")
@@ -33,8 +35,7 @@ class XlsToCsv():
         # print(self.parsed_data[1])
         # exit()
 
-    def write(self):
-
+    def prepare(self):
         # print(self.parsed_data[1])
         # json_data = json.loads(self.parsed_data[1])
         # print(json_data)
@@ -51,7 +52,7 @@ class XlsToCsv():
         # exit()
         # csv_rows = list()
         # csv_rows = [[[""]*cols]*rows]*tables
-        csv_rows = [] 
+        self.csv_rows = [] 
         # csv_rows = [[ ['#' for col in range(cols)] for col in range(rows)] for row in range(sheets)]
 
         # print(csv_rows[tables-1][rows-1][cols - 1])
@@ -69,89 +70,142 @@ class XlsToCsv():
 
             # print(x["table_data"])
             # exit()
-            table_data1 = zip(*x["table_data"])
-
-            # pprint.pprint(list(table_data1))
+            """
+            Convert list to rows
+            [
+                [
+                    "Wired Microphones-Recording",
+                    "USB",
+                    "C44-USB",
+                    "AKG-C22-USB"
+                ],
+                [
+                    "",
+                    "",
+                    "Wired Mics",
+                    "Wired Mics"
+                ],
+            ]
+            to    
+            {
+                ('RRC-4SP', '19" RACK CASE, 4U SPACE', 761294218389.0, 249.99, 156.25), 
+                ('PSB-7U', 'AC ADAPTOR (Order as Part #5100047496 this includes AC cord)', 5100047496.0, 40.11, 28.65),
+                ...
+            }  
+            """
+            rows = zip(*x["table_data"])
+            # print(set(rows))
+            # exit()
+            # pprint.pprint(list(rows))
             # pprint.pprint((*x["table_data"]))
-            for table_data in table_data1:
+
+            """
+                Loop through rows 
+                prepare new row with required format 
+                and append in new variable `csv_rows`
+            
+            """
+            category = ""
+            for row in rows:
                 _row = dict() # {'name': 'Albania','area': 28748,   'country_code2': 'AL',  'country_code3': 'ALB'}
 
-                # print(table_data)
-                # print(x["table_data"][4][2])  # col , row
+                # print(row)
+                # print(x["row"][4][2])  # col , row
                 # exit()
-                for row_index, table_row_item in enumerate(table_data):
-                    # print(table_row_item)
-                    # print(x["table_data"][col_index][row_index])  # col , row
-                    # print(row_index)
-                    # csv_rows[sheet_index][row_index][col_index] = table_row_item
-                    # print (f'csv_rows[{sheet_index}][{row_index}][{col_index}] = {table_row_item}')
-                    # print (f'header[{col_index}]: {table_row_item}')
-                    if(len(header) > row_index):
-                        _row.update({header[row_index]: table_row_item})
+                # if not all(v for v in ('', '', '', '', '')):
+                #     print("Yes FALSE")    
+                # https://stackabuse.com/any-and-all-in-python-with-examples/
+                """
+                print(any([2 == 2, 3 == 2]))    => True
+                print(any([True, False, False]))    => True
+                print(any([False, False])) => False
+                """
+                
+                if any(row):
 
-                # add sheet name as extra field
-                # and uppend row to csv  row
-                _row.update({"sheet_name": sheet_name})
-                csv_rows.append(_row)
+                    """
+                    Skip column name
+                    """
+                    if (row[0] == header[0]): # header row detected  ('Item Name', 'Item Code', 'List', 'Dealer', 'Weight', 'Length', 'Width', 'Height')
+                        print("header row detected ", row)     
+                        continue
+                    
+                    """
+                    Check to identify category : if any column has empty values + check 2nd and 3rd col also blank
+                    Record category : 
+                    """
+                    if (not all(row) and not row[1] and not row[2]): # and row[0] and  row[1]:
+                        print("category = ", row[0] , len(row[1]) , len(row[2]) , row)     
+                        category = row[0]
+                        continue
+
+                    for i, row_item in enumerate(row):
+                        # print(row_item)
+                        # print(i)
+                        # print (f'header[{col_index}]: {row_item}')
+                        if(len(header) > i):
+                            _row.update({header[i]: row_item})
+
+                    # add sheet name as extra field
+                    # and uppend row to csv  row
+                    if category :
+                        _row.update({"category": category})        
+
+                    _row.update({"sheet_name": sheet_name})
+                    self.csv_rows.append(_row)
+                else:
+                    print(row , "All empty")
+       
 
         # print(sheets)
         # print(header)
-        # csv_rows[1][1][1] = "sheet 1 row 0 col 0"
-        # csv_rows[1][0][0] = "sheet 2 row 0 col 0"
         # print(list(csv_rows))
 
         # header.pop()
         #csv header 
         header.append("sheet_name") # ['name', 'area', 'country_code2', 'country_code3']
+        header.append("category") 
         self.header = header
         # self.csv_rows = csv_rows
         # pprint.pprint(header)
         # pprint.pprint(csv_rows)
         # exit()
 
-        # csv data example 
-        #   [
-        #     {'name': 'Albania',
-        #      'area': 28748,
-        #      'country_code2': 'AL',
-        #      'country_code3': 'ALB'},
-        #     {'name': 'Algeria',
-        #      'area': 2381741,
-        #      'country_code2': 'DZ',
-        #      'country_code3': 'DZA'},
-        #     {'name': 'American Samoa',
-        #      'area': 199,
-        #      'country_code2': 'AS',
-        #      'country_code3': 'ASM'}
-        # ]
-        # filename = (os.path.splitext(
-        #     os.path.basename(self.source_xls_path))[0]) + ".csv"
-        # # print("filename " + filename)
-        # csvfilepath = _get_excce(filename, "csv")
-        # self.csvfilepath = csvfilepath
-        
+         
+
+    def write(self):
+ 
         # print(csvfilepath)
         with open(self.dest_csv_path, 'w', encoding='UTF8', newline='') as f:
             # writer = csv.DictWriter(f, fieldnames=fieldnames)
-            writer = csv.DictWriter(f, fieldnames=header)
+            writer = csv.DictWriter(f, fieldnames=self.header)
             writer.writeheader()
-            writer.writerows(csv_rows)
+            writer.writerows(self.csv_rows)
 
 # argument for souce filename 
 # argument for destination filename
 source_xls_path = sys.argv[1]
 dest_csv_path = sys.argv[2]
-print(source_xls_path)
-print(dest_csv_path)
+# print(source_xls_path)
+# print(dest_csv_path)
 
 # xlsObj = XlsToCsv('test_excel.xlsx')
 xlsObj = XlsToCsv(source_xls_path , dest_csv_path)
+
+print(xlsObj.source_xls_path)
+print(xlsObj.dest_csv_path)
+
+# $ py ./xls_to_csv.py ./excel/AVR\ Pricelist\ -\ Roland\ Pro\ AV\ Jan\ 24th\ 2022.xlsm ./csv/AVR\ Pricelist\ -\ Roland\ Pro\ AV\ Jan\ 24th\ 2022.csv
+# $ py ./xls_to_csv.py ./excel/AVR\ Pricelist\ -\ Roland\ Pro\ AV\ Jan\ 24th\ 2022.xlsm ./csv/AVR\ Pricelist\ -\ Roland\ Pro\ AV\ Jan\ 24th\ 2022.csv
+# exit()
+
 # xlsObj = XlsToCsv('Harman Pro Pricing 010522.xlsx')
 # xlsObj = XlsToCsv("EAW Dealer Price List April 2022.xlsx")
 # xlsObj = XlsToCsv("DMR Price List 1-1-2022.xlsx")
 # xlsObj = XlsToCsv("AVR Pricelist - Roland Pro AV Jan 24th 2022.xlsm")
 # xlsObj = XlsToCsv("Visionary Solutions - Dealer Price List - Effective Feb 15 2022.xlsx")
 xlsObj.convert()
+xlsObj.prepare()
 xlsObj.write()
 # print (xlsObj.csvfilepath[0])
 
