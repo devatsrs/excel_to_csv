@@ -149,7 +149,7 @@ class XlsToCsv():
                     # add sheet name as extra field
                     # and uppend row to csv  row
                     if category :
-                        _row.update({"category": category})        
+                        _row.update({"ext_category": category})        
 
                     _row.update({"sheet_name": sheet_name})
                     self.csv_rows.append(_row)
@@ -164,7 +164,7 @@ class XlsToCsv():
         # header.pop()
         #csv header 
         header.append("sheet_name") # ['name', 'area', 'country_code2', 'country_code3']
-        header.append("category") 
+        header.append("ext_category") 
         self.header = header
         # self.csv_rows = csv_rows
         # pprint.pprint(header)
