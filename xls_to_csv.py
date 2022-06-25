@@ -26,7 +26,7 @@ class XlsToCsv():
         # print(self.source_xls_path)
         # filepath_n_name = _get_excce(self.source_xls_path, "excel")
         # print(filepath_n_name)
-        filepath_n_name = [self.source_xls_path,os.path.basename(self.source_xls_path)]
+        # filepath_n_name = [self.source_xls_path,os.path.basename(self.source_xls_path)]
         # print(filepath_n_name)
         # exit()
         # parsed_file = import_xls.parse_file(*_get_excce(self.source_xls_path))
@@ -55,18 +55,28 @@ class XlsToCsv():
         self.csv_rows = [] 
         # csv_rows = [[ ['#' for col in range(cols)] for col in range(rows)] for row in range(sheets)]
 
+
         # print(csv_rows[tables-1][rows-1][cols - 1])
         # pprint.pprint(csv_rows)
         # exit()
+        # Prepare csv data 
         for sheet_index, x in enumerate(self.parsed_data[1]):
             sheet_name = x["table_name"]
-            sheets.append(sheet_name)
-            # print(sheet_index)
-            # print(sheet_name)
-            
-            for y in x["column_metadata"]:
-                if(sheet_index == 0):
+            # sheets.append(sheet_name)
+
+            # Filter extra sheets , setup header 
+            if( sheet_name ==  "Terms and Conditions"):
+                print(sheet_name + " Sheet Removed")
+                continue
+
+            if(not header):
+                for y in x["column_metadata"]:
                     header.append(y["id"])
+
+            
+            # print(sheet_index)
+            # print(header)
+            # exit()
 
             # print(x["table_data"])
             # exit()
@@ -93,6 +103,8 @@ class XlsToCsv():
                 ...
             }  
             """
+            # THIS HAS OPEN ISSUE:
+            # WHEN THERE IS PARRALEL TABLE LIKE IN Philips I Dealer Q2 2022 Pricing_April 11 2022 (1).xlsx - SHEET - Extended Warranty IT WILL MERGE IT 
             rows = zip(*x["table_data"])
             # print(set(rows))
             # exit()
@@ -152,6 +164,8 @@ class XlsToCsv():
                         _row.update({"ext_category": category})        
 
                     _row.update({"sheet_name": sheet_name})
+
+
                     self.csv_rows.append(_row)
                 else:
                     print(row , "All empty")
