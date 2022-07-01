@@ -21,25 +21,11 @@ class XlsToCsv():
         # self.dest_csv_path = os.path.abspath(dest_csv_path)
 
     def convert(self):
-        # print(self.source_xls_path)
-        # filepath = os.path.dirname(__file__) + "/excel/" + self.source_xls_path
-        # print(self.source_xls_path)
-        # filepath_n_name = _get_excce(self.source_xls_path, "excel")
-        # print(filepath_n_name)
-        # filepath_n_name = [self.source_xls_path,os.path.basename(self.source_xls_path)]
-        # print(filepath_n_name)
-        # exit()
-        # parsed_file = import_xls.parse_file(*_get_excce(self.source_xls_path))
-        # self.parsed_data = import_xls.parse_file(*filepath_n_name)
         self.parsed_data = import_xls.parse_file(file_path=self.source_xls_path,orig_name=os.path.basename(self.source_xls_path))
         # print(self.parsed_data[1])
         # exit()
 
     def prepare(self):
-        # print(self.parsed_data[1])
-        # json_data = json.loads(self.parsed_data[1])
-        # print(json_data)
-        # exit()
         header = []
         sheets = []
         # +1 for sheet name
@@ -73,6 +59,14 @@ class XlsToCsv():
                 for y in x["column_metadata"]:
                     header.append(y["id"])
 
+            # fix for header less sheets 
+            _row = dict()
+            for index,data in enumerate(x["column_metadata"]):
+                if(len(header) > index and not data["id"] in header):
+                    _row.update({header[index]: data["id"]})
+            # insert                     
+            if(_row):
+                self.csv_rows.append(_row)
             
             # print(sheet_index)
             # print(header)
@@ -194,6 +188,8 @@ class XlsToCsv():
             # writer = csv.DictWriter(f, fieldnames=fieldnames)
             writer = csv.DictWriter(f, fieldnames=self.header)
             writer.writeheader()
+            # print(self.csv_rows)
+            # exit()
             writer.writerows(self.csv_rows)
 
 # argument for souce filename 
