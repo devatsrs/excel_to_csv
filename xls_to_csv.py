@@ -51,7 +51,7 @@ class XlsToCsv():
             # sheets.append(sheet_name)
 
             # Filter extra sheets , setup header 
-            if( sheet_name ==  "Terms and Conditions"):
+            if( sheet_name in [ "Terms and Conditions","Overview"]):
                 print(sheet_name + " Sheet Removed")
                 continue
 
@@ -140,7 +140,7 @@ class XlsToCsv():
                     Check to identify category : if any column has empty values + check 2nd and 3rd col also blank
                     Record category : 
                     """
-                    if (not all(row) and not row[1] and not row[2]): # and row[0] and  row[1]:
+                    if (not all(row) and len(row) >= 3 and not row[1] and not row[2]): # and row[0] and  row[1]:
                         print("category = ", row[0] , len(row[1]) , len(row[2]) , row)     
                         category = row[0]
                         continue
