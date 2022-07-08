@@ -1,6 +1,7 @@
 import json
 import os
 import sys
+from wsgiref import headers
 from lib import import_xls
 import csv
 import pprint
@@ -17,6 +18,7 @@ class XlsToCsv():
     def __init__(self, source_xls_path, dest_csv_path):
         self.source_xls_path = (source_xls_path)
         self.dest_csv_path = (dest_csv_path)
+        self.header = []
         # self.source_xls_path = os.path.abspath(source_xls_path)
         # self.dest_csv_path = os.path.abspath(dest_csv_path)
 
@@ -24,6 +26,43 @@ class XlsToCsv():
         self.parsed_data = import_xls.parse_file(file_path=self.source_xls_path,orig_name=os.path.basename(self.source_xls_path))
         # print(self.parsed_data[1])
         # exit()
+
+    def skip_sheets(self):
+        return [ "Terms and Conditions","Overview"]
+
+    def prepare_header(self):
+
+        self.header = dict([])
+
+        _header = []
+        for sheet_index, x in enumerate(self.parsed_data[1]):
+            header = []
+
+            sheet_name = x["table_name"]
+            if( sheet_name in self.skip_sheets()):
+                print(sheet_name + " Sheet Removed")
+                continue
+
+            for col in x["column_metadata"]:
+                if(col["id"] not in _header ):
+                    header.append(col["id"])
+                    _header.append(col["id"])
+            
+            if ("sheet_name" not in _header ):
+                header.append("sheet_name") 
+                _header.append("sheet_name") 
+            
+            if ("ext_category" not in _header):
+                header.append("ext_category") 
+                _header.append("ext_category") 
+
+            # print(header)
+
+            self.header[sheet_index] = header
+
+        print(self.header)
+
+
 
     def prepare(self):
         header = []
