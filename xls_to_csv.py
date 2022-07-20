@@ -1,5 +1,4 @@
 import json
-from ntpath import join
 import os
 import sys
 from wsgiref import headers
