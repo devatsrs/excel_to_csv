@@ -6,23 +6,16 @@ from lib import import_xls
 import csv
 import pprint
 
-# from lib.db import DB
-
-
-# def _get_excce(filename, folder):
-#     return [os.path.dirname(__file__) + "/"+folder + "/" + filename, filename]
-
-
 class XlsToCsv():
 
     def __init__(self, source_xls_path, dest_csv_path):
         self.source_xls_path = (source_xls_path)
         self.dest_csv_path = (dest_csv_path)
-        self.header = []
-        # self.source_xls_path = os.path.abspath(source_xls_path)
-        # self.dest_csv_path = os.path.abspath(dest_csv_path)
+        self.header = dict([])
+        self.csv_rows = []
 
-    def convert(self):
+    # Read exce file and load parsed data 
+    def convert_n_load_parsed_data(self):
         self.parsed_data = import_xls.parse_file(file_path=self.source_xls_path,orig_name=os.path.basename(self.source_xls_path))
         # print(self.parsed_data[1])
         # exit()
@@ -30,91 +23,112 @@ class XlsToCsv():
     def skip_sheets(self):
         return [ "Terms and Conditions","Overview"]
 
+    def should_skip_sheet(self,sheet_name):
+        return sheet_name in self.skip_sheets()
+
     def prepare_header(self):
 
-        self.header = dict([])
-
-        _header = []
-        for sheet_index, x in enumerate(self.parsed_data[1]):
+        # in case blank title / header is found we will add __1__ as header 
+        _blank_col_index = 0
+        for sheet_index, data in enumerate(self.parsed_data[1]):
             header = []
 
-            sheet_name = x["table_name"]
+            sheet_name = data["table_name"]
             if( sheet_name in self.skip_sheets()):
                 print(sheet_name + " Sheet Removed")
                 continue
 
-            for col in x["column_metadata"]:
-                if(col["id"] not in _header ):
-                    header.append(col["id"])
-                    _header.append(col["id"])
+            for col in data["column_metadata"]:
+                col_name = col["id"]
+                if(col_name):
+                    header.append(col_name)
+                else:
+                    _blank_col_index += 1
+                    col_name = "__" + str(_blank_col_index) + "__"
+                    header.append(col_name)
             
-            if ("sheet_name" not in _header ):
-                header.append("sheet_name") 
-                _header.append("sheet_name") 
-            
-            if ("ext_category" not in _header):
-                header.append("ext_category") 
-                _header.append("ext_category") 
-
-            # print(header)
-
+            header.append("sheet_name")
+            header.append("ext_category") 
             self.header[sheet_index] = header
 
-        print(self.header)
+        # look through dict and merge array 
+        self.all_sheet_headers =[]
+        for sheet_index in self.header:
+            for h_index, h_text in enumerate(self.header[sheet_index]):
+                if(h_text not in ["ext_category","sheet_name"]):
+                    if(h_text not in self.all_sheet_headers ):
+                        self.all_sheet_headers.append(h_text) 
 
+        self.header_vs_all_mapping = dict([])
 
-
-    def prepare(self):
-        header = []
-        sheets = []
-        # +1 for sheet name
-        # cols = (len(self.parsed_data[1][0]["column_metadata"])) + 1
-        # rows = (len(self.parsed_data[1][0]["table_data"][0]))
-        # tables = (len(self.parsed_data[1]))  # sheets
-        # print(cols)
-        # print(rows)
-        # print(tables)
+        for ah_index , ah_text in enumerate(self.all_sheet_headers):
+            f_header_index = []
+            for sheet_index  in self.header:
+                if(ah_text in self.header[sheet_index] ):
+                    f_h_index = self.header[sheet_index].index(ah_text)
+                    f_header_index.append(f_h_index)
+                else:
+                    f_header_index.append(-1)
+                
+                self.header_vs_all_mapping[ah_index] = f_header_index
+                    
+        # Add extra cols 
+        self.all_sheet_headers.append("sheet_name") 
+        self.all_sheet_headers.append("ext_category") 
+        # print(self.header)
+        # print(self.all_sheet_headers)
+        # # print(len(self.all_sheet_headers))
+        # print(self.header_vs_all_mapping)
+        # print(len(self.header_vs_all_mapping))
         # exit()
-        # csv_rows = list()
-        # csv_rows = [[[""]*cols]*rows]*tables
-        self.csv_rows = [] 
-        # csv_rows = [[ ['#' for col in range(cols)] for col in range(rows)] for row in range(sheets)]
 
 
-        # print(csv_rows[tables-1][rows-1][cols - 1])
-        # pprint.pprint(csv_rows)
-        # exit()
-        # Prepare csv data 
-        for sheet_index, x in enumerate(self.parsed_data[1]):
-            sheet_name = x["table_name"]
-            # sheets.append(sheet_name)
 
-            # Filter extra sheets , setup header 
-            if( sheet_name in [ "Terms and Conditions","Overview"]):
-                print(sheet_name + " Sheet Removed")
-                continue
+    def header_less_row(self,data,header):
 
-            if(not header):
-                for y in x["column_metadata"]:
-                    header.append(y["id"])
+        _row = dict() # {'name': 'Albania','area': 28748,   'country_code2': 'AL',  'country_code3': 'ALB'}
 
-            # fix for header less sheets 
-            _row = dict()
-            for index,data in enumerate(x["column_metadata"]):
-                if(len(header) > index and not data["id"] in header):
-                    _row.update({header[index]: data["id"]})
+
+        if(data["column_metadata"][0]["id"] not in header):
+            for index,col in enumerate(data["column_metadata"]):
+                if(len(header) > index and col["id"] not in header):
+                    _row.update({header[index]: col["id"]})
             # insert                     
             if(_row):
                 self.csv_rows.append(_row)
-            
-            # print(sheet_index)
-            # print(header)
-            # exit()
 
-            # print(x["table_data"])
-            # exit()
+
+    def indexExists(self,list,index):
+        if 0 <= index < len(list):
+            return True
+        else:
+            return False
+
+    def prepare_csv_rows(self):
+
+        # prepare header first to load data in dict with key value pair
+        self.prepare_header()
+
+        # Loop through sheets and Prepare csv data 
+        for sheet_index, data in enumerate(self.parsed_data[1]):
+            sheet_name = data["table_name"]
+
+            # Skip extra sheets , setup header 
+            if(self.should_skip_sheet(sheet_name)):
+                print(sheet_name + " Sheet Removed")
+                continue
+            
+            # print(f"sheet_index {sheet_index}")
+
+            header = self.header[sheet_index]
+            _row = dict()
+
+            
+            self.header_less_row(data,header) # fix for header less sheets 
+
+
             """
-            Convert list to rows
+            Convert list to dicts 
             [
                 [
                     "Wired Microphones-Recording",
@@ -136,100 +150,112 @@ class XlsToCsv():
                 ...
             }  
             """
-            # THIS HAS OPEN ISSUE:
-            # WHEN THERE IS PARRALEL TABLE LIKE IN Philips I Dealer Q2 2022 Pricing_April 11 2022 (1).xlsx - SHEET - Extended Warranty IT WILL MERGE IT 
-            rows = zip(*x["table_data"])
-            # print(set(rows))
-            # exit()
-            # pprint.pprint(list(rows))
-            # pprint.pprint((*x["table_data"]))
+            rows = zip(*data["table_data"])
 
             """
                 Loop through rows 
                 prepare new row with required format 
                 and append in new variable `csv_rows`
-            
             """
             category = ""
-            for row in rows:
-                _row = dict() # {'name': 'Albania','area': 28748,   'country_code2': 'AL',  'country_code3': 'ALB'}
+            for row_index, row in enumerate(rows):
+                _row = dict() 
 
-                # print(row)
-                # print(x["row"][4][2])  # col , row
-                # exit()
-                # if not all(v for v in ('', '', '', '', '')):
-                #     print("Yes FALSE")    
-                # https://stackabuse.com/any-and-all-in-python-with-examples/
                 """
                 print(any([2 == 2, 3 == 2]))    => True
                 print(any([True, False, False]))    => True
                 print(any([False, False])) => False
                 """
-                
                 if any(row):
 
-                    """
-                    Skip column name
-                    """
-                    if (row[0] == header[0]): # header row detected  ('Item Name', 'Item Code', 'List', 'Dealer', 'Weight', 'Length', 'Width', 'Height')
+                    # Skip if header column name
+                    if (row[0] in self.all_sheet_headers): # header row detected  ('Item Name', 'Item Code', 'List', 'Dealer', 'Weight', 'Length', 'Width', 'Height')
                         print("header row detected ", row)     
                         continue
                     
-                    """
-                    Check to identify category : if any column has empty values + check 2nd and 3rd col also blank
-                    Record category : 
-                    """
-                    if (not all(row) and len(row) >= 3 and not row[1] and not row[2]): # and row[0] and  row[1]:
-                        print("category = ", row[0] , len(row[1]) , len(row[2]) , row)     
-                        category = row[0]
-                        continue
+                    # All indexes we have 
+                    # self.all_sheet_headers index 
+                    # self.header[sheet_index] index 
+                    # list(row) index 
+                    non_empty_col_data = []
+                    for h_index, h_text in enumerate(self.all_sheet_headers):
+                        if h_text not in ["ext_category","sheet_name"]:
+                            for m_sheet_index, m_val in enumerate(self.header_vs_all_mapping[h_index]):
+                                if m_sheet_index == sheet_index:
+                                    if m_val > -1:
+                                        try:
+                                            col_val = row[m_val] 
+                                        except IndexError:
+                                            # print(m_val)
+                                            # print(row)
+                                            print(f"IndexError Sheet {m_sheet_index} - Row[{row_index}][{m_val}]")
+                                            # print(IndexError.args)
+                                            # exit()
 
-                    for i, row_item in enumerate(row):
-                        # print(row_item)
-                        # print(i)
-                        # print (f'header[{col_index}]: {row_item}')
-                        if(len(header) > i):
-                            _row.update({header[i]: row_item})
+                                        if col_val:
+                                            non_empty_col_data.append(col_val)
+                                    else:
+                                        col_val = "" # f"{h_index}"
 
+                                    _row.update({h_text: col_val})
+ 
                     # add sheet name as extra field
                     # and uppend row to csv  row
-                    if category :
-                        _row.update({"ext_category": category})        
 
                     _row.update({"sheet_name": sheet_name})
+                    # print(non_empty_col_data)
+                    if len(non_empty_col_data) == 1:
+                        category = non_empty_col_data.pop()
+                        continue
+                        # print(category)
+                        # exit()
 
+                    if category :
+                        _row.update({"ext_category": category})        
+                    else:
+                        _row.update({"ext_category": ""})        
 
                     self.csv_rows.append(_row)
                 else:
                     print(row , "All empty")
-       
 
-        # print(sheets)
-        # print(header)
-        # print(list(csv_rows))
-
-        # header.pop()
-        #csv header 
-        header.append("sheet_name") # ['name', 'area', 'country_code2', 'country_code3']
-        header.append("ext_category") 
-        self.header = header
-        # self.csv_rows = csv_rows
-        # pprint.pprint(header)
-        # pprint.pprint(csv_rows)
-        # exit()
-
-         
-
+    # Write to csv 
     def write(self):
  
         # print(csvfilepath)
         with open(self.dest_csv_path, 'w', encoding='UTF8', newline='') as f:
             # writer = csv.DictWriter(f, fieldnames=fieldnames)
-            writer = csv.DictWriter(f, fieldnames=self.header)
+            writer = csv.DictWriter(f, fieldnames=self.all_sheet_headers)
             writer.writeheader()
-            # print(self.csv_rows)
-            # exit()
+            
+            # print(self.all_sheet_headers)
             writer.writerows(self.csv_rows)
+            # i = 1
+
+            # for key_val in self.csv_rows:
+            #     print("---")
+            #     print(key_val)
+            #     i = i + 1
+            #     if (i > 10 ):
+            #         break
+
+            # for curr_row in self.csv_rows:
+            #     for all_h_key in self.all_sheet_headers:
+            #         if(all_h_key in curr_row.keys()):
+            #             if(curr_row.get(all_h_key,"")):
+            #                 writer.writerow({all_h_key: curr_row.get(all_h_key,"")})
+                            # prepare row first and then write 
+
+                        # print(key_val)
+                    # print(all_h_key)
+                    # print(key_val.get(all_h_key,""))
+                    # print(all_h_key in key_val.keys())
+                    # exit()
+                    # if (all_h_key in key_val.keys()):
+                    #     # for key , val in key_val.items():
+                    #     writer.writerow(key_val)
+                    
+
 
 # argument for souce filename 
 # argument for destination filename
@@ -241,8 +267,8 @@ dest_csv_path = sys.argv[2]
 # xlsObj = XlsToCsv('test_excel.xlsx')
 xlsObj = XlsToCsv(source_xls_path , dest_csv_path)
 
-print(xlsObj.source_xls_path)
-print(xlsObj.dest_csv_path)
+# print(xlsObj.source_xls_path)
+# print(xlsObj.dest_csv_path)
 
 # $ py ./xls_to_csv.py ./excel/AVR\ Pricelist\ -\ Roland\ Pro\ AV\ Jan\ 24th\ 2022.xlsm ./csv/AVR\ Pricelist\ -\ Roland\ Pro\ AV\ Jan\ 24th\ 2022.csv
 # $ py ./xls_to_csv.py ./excel/AVR\ Pricelist\ -\ Roland\ Pro\ AV\ Jan\ 24th\ 2022.xlsm ./csv/AVR\ Pricelist\ -\ Roland\ Pro\ AV\ Jan\ 24th\ 2022.csv
@@ -253,8 +279,8 @@ print(xlsObj.dest_csv_path)
 # xlsObj = XlsToCsv("DMR Price List 1-1-2022.xlsx")
 # xlsObj = XlsToCsv("AVR Pricelist - Roland Pro AV Jan 24th 2022.xlsm")
 # xlsObj = XlsToCsv("Visionary Solutions - Dealer Price List - Effective Feb 15 2022.xlsx")
-xlsObj.convert()
-xlsObj.prepare()
+xlsObj.convert_n_load_parsed_data()
+xlsObj.prepare_csv_rows()
 xlsObj.write()
 # print (xlsObj.csvfilepath[0])
 
