@@ -41,6 +41,7 @@ class XlsToCsv():
             for col in data["column_metadata"]:
                 col_name = col["id"]
                 if(col_name):
+                    col_name = col_name.replace('\n', "")
                     header.append(col_name)
                 else:
                     _blank_col_index += 1
