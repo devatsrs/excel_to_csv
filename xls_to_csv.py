@@ -13,6 +13,8 @@ class XlsToCsv():
         self.dest_csv_path = (dest_csv_path)
         self.header = dict([])
         self.csv_rows = []
+        self.skip_sheets_list =  [ "Legal", "Terms and Conditions","Overview"]
+
 
     # Read exce file and load parsed data 
     def convert_n_load_parsed_data(self):
@@ -21,7 +23,7 @@ class XlsToCsv():
         # exit()
 
     def skip_sheets(self):
-        return [ "Terms and Conditions","Overview"]
+        return self.skip_sheets_list
 
     def should_skip_sheet(self,sheet_name):
         return sheet_name in self.skip_sheets()
@@ -31,26 +33,34 @@ class XlsToCsv():
         # in case blank title / header is found we will add __1__ as header 
         _blank_col_index = 0
         for sheet_index, data in enumerate(self.parsed_data[1]):
-            header = []
+            _header = []
+            _dup_cols = []
 
             sheet_name = data["table_name"]
             if( sheet_name in self.skip_sheets()):
-                print(sheet_name + " Sheet Removed")
+                print(sheet_name + " Sheet Skipped")
+                self.header[sheet_index] = _header
                 continue
 
             for col in data["column_metadata"]:
                 col_name = col["id"]
+
+                if(col_name in _header):
+                    _dup_cols.append(col_name)
+                    _dup_col_index = _dup_cols.count(col_name) # found count occurence of same col name
+                    col_name = f"{col_name}_{_dup_col_index}" 
+
                 if(col_name):
                     col_name = col_name.replace('\n', "")
-                    header.append(col_name)
+                    _header.append(col_name)
                 else:
                     _blank_col_index += 1
                     col_name = "__" + str(_blank_col_index) + "__"
-                    header.append(col_name)
+                    _header.append(col_name)
             
-            header.append("sheet_name")
-            header.append("ext_category") 
-            self.header[sheet_index] = header
+            _header.append("sheet_name")
+            _header.append("ext_category") 
+            self.header[sheet_index] = _header
 
         # look through dict and merge array 
         self.all_sheet_headers =[]
@@ -71,7 +81,7 @@ class XlsToCsv():
                 else:
                     f_header_index.append(-1)
                 
-                self.header_vs_all_mapping[ah_index] = f_header_index
+            self.header_vs_all_mapping[ah_index] = f_header_index
                     
         # Add extra cols 
         self.all_sheet_headers.append("sheet_name") 
@@ -116,7 +126,7 @@ class XlsToCsv():
 
             # Skip extra sheets , setup header 
             if(self.should_skip_sheet(sheet_name)):
-                print(sheet_name + " Sheet Removed")
+                print(sheet_name + " Sheet Skipped")
                 continue
             
             # print(f"sheet_index {sheet_index}")
@@ -167,6 +177,11 @@ class XlsToCsv():
                 print(any([True, False, False]))    => True
                 print(any([False, False])) => False
                 """
+                # if row_index == 0:
+                #     print(row)
+                #     print(self.all_sheet_headers)
+                #     exit()
+
                 if any(row):
 
                     # Skip if header column name
@@ -183,14 +198,15 @@ class XlsToCsv():
                         if h_text not in ["ext_category","sheet_name"]:
                             for m_sheet_index, m_val in enumerate(self.header_vs_all_mapping[h_index]):
                                 if m_sheet_index == sheet_index:
-                                    if m_val > -1:
+                                    if m_val > -1: #and len(row) > m_val:
                                         try:
                                             col_val = row[m_val] 
                                         except IndexError:
-                                            # print(m_val)
-                                            # print(row)
                                             print(f"IndexError Sheet {m_sheet_index} - Row[{row_index}][{m_val}]")
-                                            # print(IndexError.args)
+                                            # print(f"sheet_index = {sheet_index} h_index {h_index} - h_text {h_text}")
+                                            # print(row)
+                                            # print(self.header_vs_all_mapping[h_index])
+                                            # print(self.all_sheet_headers)
                                             # exit()
 
                                         if col_val:
@@ -218,7 +234,8 @@ class XlsToCsv():
 
                     self.csv_rows.append(_row)
                 else:
-                    print(row , "All empty")
+                    None 
+                    # print(row , "All empty")
 
     # Write to csv 
     def write(self):
@@ -283,6 +300,7 @@ xlsObj = XlsToCsv(source_xls_path , dest_csv_path)
 xlsObj.convert_n_load_parsed_data()
 xlsObj.prepare_csv_rows()
 xlsObj.write()
+print("CSV conversion done!")
 # print (xlsObj.csvfilepath[0])
 
 
