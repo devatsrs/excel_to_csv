@@ -177,7 +177,8 @@ class XlsToCsv():
                 print(any([True, False, False]))    => True
                 print(any([False, False])) => False
                 """
-                # if row_index == 0:
+                # if sheet_index != 2:
+                #     continue
                 #     print(row)
                 #     print(self.all_sheet_headers)
                 #     exit()
@@ -236,6 +237,10 @@ class XlsToCsv():
                 else:
                     None 
                     # print(row , "All empty")
+
+                # print(row)
+                # print(self.csv_rows)
+                # exit()
 
     # Write to csv 
     def write(self):
