@@ -43,7 +43,7 @@ class XlsToCsv():
                 continue
 
             for col in data["column_metadata"]:
-                col_name = col["id"]
+                col_name = col["id"].lower()
 
                 if(col_name in _header):
                     _dup_cols.append(col_name)
@@ -102,7 +102,7 @@ class XlsToCsv():
 
         if(data["column_metadata"][0]["id"] not in header):
             for index,col in enumerate(data["column_metadata"]):
-                if(len(header) > index and col["id"] not in header):
+                if(len(header) > index and col["id"].lower() not in header):
                     _row.update({header[index]: col["id"]})
             # insert                     
             if(_row):
