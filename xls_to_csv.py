@@ -116,7 +116,6 @@ class XlsToCsv():
             _dup_cols = []
 
             sheet_name = data["table_name"]
-
             if(sheet_name in self.skip_sheets()):
                 print(sheet_name + " Sheet Skipped")
                 self.header[sheet_index] = _header
@@ -184,7 +183,9 @@ class XlsToCsv():
                 if(len(header) > index and col["id"].lower() not in header):
                     _row.update({header[index]: col["id"]})
             # insert
-            if(_row):
+            all_row_empty = all(
+                element == "" for element in list(_row.values()))
+            if(not all_row_empty):
                 self.csv_rows.append(_row)
 
     def indexExists(self, list, index):
@@ -204,6 +205,7 @@ class XlsToCsv():
         # Loop through sheets and Prepare csv data
         for sheet_index, data in enumerate(self.parsed_data[1]):
             sheet_name = data["table_name"]
+
 
             if(self.is_cav_dealer_file() and self.cav_ignore_sheets(sheet_name)):
                 print(sheet_name + " Sheet Skipped")
@@ -272,6 +274,7 @@ class XlsToCsv():
 
                     # Skip if header column name
                     # header row detected  ('Item Name', 'Item Code', 'List', 'Dealer', 'Weight', 'Length', 'Width', 'Height')
+
                     header_col_name_found = False
                     for row_text in row:
                         if (row_text in self.all_sheet_headers):
@@ -307,6 +310,7 @@ class XlsToCsv():
                                     else:
                                         col_val = ""  # f"{h_index}"
 
+
                                     if(col_val):
                                         _row.update({h_text: col_val})
 
@@ -326,8 +330,11 @@ class XlsToCsv():
                     else:
                         _row.update({"ext_category": ""})
 
-                    if (any(_row)):
+                    all_row_empty = all(
+                        element == "" for element in list(_row.values()))
+                    if (not all_row_empty):
                         self.csv_rows.append(_row)
+
                 else:
                     None
                     # print(row , "All empty")
