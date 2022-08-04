@@ -17,9 +17,7 @@ class XlsToCsv():
         self.skip_sheets_list = [
             "Legal",  # Shure
             "Terms and Conditions",
-            "Overview",
-            "1. Cover & T of C",  # CAV Dealer
-            "2. How to Spec & Write P.O.'s"  # CAV Dealer
+            "Overview"
         ]
 
     # Read exce file and load parsed data
