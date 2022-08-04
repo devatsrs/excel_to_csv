@@ -49,33 +49,26 @@ class XlsToCsv():
 
     # for cav dealer sheet
     def cav_dealer_header(self):
-        return ["LASER-Based Systems",
-                "lumens / contrast", "Part #", "List Price", "1-5 Units", "6-19 Units", "20+ Units / Reg", "MSRP", "Dlr Cost", "Dealer Cost"]
+        return {
+            0: [],
+            1: [],
+            2: ["LASER Based Systems",	"lumens / contrast",	"Part #",	"List Price", "1-5 Units", "6-19 Units",	"20+ Units / Reg",	"MSRP",	"Dlr Cost", "sheet_name", "ext_category"],
+            3: ["LASER Based Systems",	"lumens / contrast",	"Part #",	"List Price",	"1-5 Units", "6-19 Units",	"20+ Units / Reg",	"MSRP", "Dlr Cost", "sheet_name", "ext_category"],
+            4: ["System1",	"lumens / contrast",	"Part #",	"List Price",	"1-5 Units", "6-19 Units",	"20+ Units / Reg",		"MSRP",	"Dlr Cost", "sheet_name", "ext_category"],
+            5: ["LASER Based Systems",	"lumens / contrast",	"Part #",	"List Price",	"Dealer Cost",	"MSRP",	"Dlr Cost", "sheet_name", "ext_category"],
+            6: ["M-Vision", 	"Warranty",	"Part #",	"List Price",	"Dealer Cost", "sheet_name", "ext_category"],
+        }
 
     def is_cav_dealer_file(self):
 
-        return True
-        if "csv dealer" in source_xls_path.lower():
+        if "cav dealer" in self.source_xls_path.lower():
             return True
 
         return False
 
     def cav_dealer_prepare_header(self):
 
-        # in case blank title / header is found we will add __1__ as header
-        for sheet_index, data in enumerate(self.parsed_data[1]):
-            _header = []
-            sheet_name = data["table_name"]
-
-            if(self.cav_ignore_sheets(sheet_name)):
-                print(sheet_name + " Sheet Skipped")
-                self.header[sheet_index] = _header
-                continue
-
-            _header = self.cav_dealer_header()
-            _header.append("sheet_name")
-            _header.append("ext_category")
-            self.header[sheet_index] = _header
+        self.header = self.cav_dealer_header()
 
         # look through dict and merge array
         self.all_sheet_headers = []
@@ -87,12 +80,17 @@ class XlsToCsv():
 
         self.header_vs_all_mapping = dict([])
 
+        # if("M-Vision" in self.header[6]):
+        #     print("yes")
+        #     exit()
+
         for ah_index, ah_text in enumerate(self.all_sheet_headers):
             f_header_index = []
             for sheet_index in self.header:
                 if(ah_text in self.header[sheet_index]):
                     f_h_index = self.header[sheet_index].index(ah_text)
                     f_header_index.append(f_h_index)
+
                 else:
                     f_header_index.append(-1)
 
@@ -101,9 +99,12 @@ class XlsToCsv():
         # Add extra cols
         self.all_sheet_headers.append("sheet_name")
         self.all_sheet_headers.append("ext_category")
+        # print("self.header")
         # print(self.header)
+        # print("self.all_sheet_headers")
         # print(self.all_sheet_headers)
-        # # print(len(self.all_sheet_headers))
+        # print(len(self.all_sheet_headers))
+        # print("self.header_vs_all_mapping")
         # print(self.header_vs_all_mapping)
         # print(len(self.header_vs_all_mapping))
         # exit()
@@ -223,7 +224,7 @@ class XlsToCsv():
             self.header_less_row(data, header)  # fix for header less sheets
 
             """
-            Convert list to dicts 
+            Convert list to dicts
             [
                 [
                     "Wired Microphones-Recording",
@@ -238,18 +239,20 @@ class XlsToCsv():
                     "Wired Mics"
                 ],
             ]
-            to    
+            to
             {
-                ('RRC-4SP', '19" RACK CASE, 4U SPACE', 761294218389.0, 249.99, 156.25), 
-                ('PSB-7U', 'AC ADAPTOR (Order as Part #5100047496 this includes AC cord)', 5100047496.0, 40.11, 28.65),
+                ('RRC-4SP', '19" RACK CASE, 4U SPACE',
+                 761294218389.0, 249.99, 156.25),
+                ('PSB-7U', 'AC ADAPTOR (Order as Part #5100047496 this includes AC cord)',
+                 5100047496.0, 40.11, 28.65),
                 ...
-            }  
+            }
             """
             rows = zip(*data["table_data"])
 
             """
-                Loop through rows 
-                prepare new row with required format 
+                Loop through rows
+                prepare new row with required format
                 and append in new variable `csv_rows`
             """
             category = ""
@@ -271,7 +274,12 @@ class XlsToCsv():
 
                     # Skip if header column name
                     # header row detected  ('Item Name', 'Item Code', 'List', 'Dealer', 'Weight', 'Length', 'Width', 'Height')
-                    if (row[0] in self.all_sheet_headers):
+                    header_col_name_found = False
+                    for row_text in row:
+                        if (row_text in self.all_sheet_headers):
+                            header_col_name_found = True
+                            break
+                    if(header_col_name_found):
                         print("header row detected ", row)
                         continue
 
