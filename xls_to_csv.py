@@ -199,10 +199,11 @@ class XlsToCsv():
     def prepare_csv_rows(self):
 
         # prepare header first to load data in dict with key value pair
-        if (self.is_cav_dealer_file()):
-            self.cav_dealer_prepare_header()
-        else:
-            self.prepare_header()
+        # if (self.is_cav_dealer_file()):
+        #     self.cav_dealer_prepare_header()
+        # else:
+        #     self.prepare_header()
+        self.prepare_header()
 
         # Loop through sheets and Prepare csv data
         for sheet_index, data in enumerate(self.parsed_data[1]):
