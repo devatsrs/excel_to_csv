@@ -27,4 +27,14 @@ content/uploads/sites/7/2022/04/DMR-Price-List-1-1-2022.xlsx /opt/bitnami/apache
 
 python ./xls_to_csv.py [souce_excel_path] [destination_csv_path]
 
+python ./xls_to_csv.py ./excel/test_excel.xlsx ./csv/test_excel.csv
 python ./xls_to_csv.py 'D:\laragon\www\gkb_req\pricedonkey\pythontest\excel\test_excel.xlsx' 'D:\laragon\www\gkb_req\pricedonkey\pythontest\csv\test_excel.csv'
+
+# Todo
+
+    pdf process with messytables
+    https://messytables.readthedocs.io/_/downloads/en/stable/pdf/
+
+# Reference
+
+    https://towardsdatascience.com/how-to-work-with-excel-files-in-pandas-c584abb67bfb#:~:text=To%20tell%20pandas%20to%20start,number%20of%20rows%20to%20skip.
