@@ -185,7 +185,9 @@ class XlsToCsv():
                 if(len(header) > index and col["id"].lower() not in header):
                     _row.update({header[index]: col["id"]})
             # insert
-            if(_row):
+            all_row_empty = all(
+                element == "" for element in list(_row.values()))
+            if(not all_row_empty):
                 self.csv_rows.append(_row)
 
     def indexExists(self, list, index):
@@ -320,7 +322,9 @@ class XlsToCsv():
                     else:
                         _row.update({"ext_category": ""})
 
-                    if (any(_row)):
+                    all_row_empty = all(
+                        element == "" for element in list(_row.values()))
+                    if (not all_row_empty):
                         self.csv_rows.append(_row)
                 else:
                     None
