@@ -64,50 +64,10 @@ class XlsToCsv():
 
         return False
 
-    def cav_dealer_prepare_header(self):
-
+    def cav_dealer_prepare_header_by_sheet(self):
         self.header = self.cav_dealer_header()
 
-        # look through dict and merge array
-        self.all_sheet_headers = []
-        for sheet_index in self.header:
-            for h_index, h_text in enumerate(self.header[sheet_index]):
-                if(h_text not in ["ext_category", "sheet_name"]):
-                    if(h_text not in self.all_sheet_headers):
-                        self.all_sheet_headers.append(h_text)
-
-        self.header_vs_all_mapping = dict([])
-
-        # if("M-Vision" in self.header[6]):
-        #     print("yes")
-        #     exit()
-
-        for ah_index, ah_text in enumerate(self.all_sheet_headers):
-            f_header_index = []
-            for sheet_index in self.header:
-                if(ah_text in self.header[sheet_index]):
-                    f_h_index = self.header[sheet_index].index(ah_text)
-                    f_header_index.append(f_h_index)
-
-                else:
-                    f_header_index.append(-1)
-
-            self.header_vs_all_mapping[ah_index] = f_header_index
-
-        # Add extra cols
-        self.all_sheet_headers.append("sheet_name")
-        self.all_sheet_headers.append("ext_category")
-        # print("self.header")
-        # print(self.header)
-        # print("self.all_sheet_headers")
-        # print(self.all_sheet_headers)
-        # print(len(self.all_sheet_headers))
-        # print("self.header_vs_all_mapping")
-        # print(self.header_vs_all_mapping)
-        # print(len(self.header_vs_all_mapping))
-        # exit()
-
-    def prepare_header(self):
+    def prepare_header_by_sheet(self):
 
         # in case blank title / header is found we will add __1__ as header
         _blank_col_index = 0
@@ -141,6 +101,13 @@ class XlsToCsv():
             _header.append("sheet_name")
             _header.append("ext_category")
             self.header[sheet_index] = _header
+
+    def prepare_header(self):
+
+        if (self.is_cav_dealer_file()):
+            self.cav_dealer_prepare_header_by_sheet()
+        else:
+            self.prepare_header_by_sheet()
 
         # look through dict and merge array
         self.all_sheet_headers = []
@@ -197,15 +164,11 @@ class XlsToCsv():
     def prepare_csv_rows(self):
 
         # prepare header first to load data in dict with key value pair
-        if (self.is_cav_dealer_file()):
-            self.cav_dealer_prepare_header()
-        else:
-            self.prepare_header()
+        self.prepare_header()
 
         # Loop through sheets and Prepare csv data
         for sheet_index, data in enumerate(self.parsed_data[1]):
             sheet_name = data["table_name"]
-
 
             if(self.is_cav_dealer_file() and self.cav_ignore_sheets(sheet_name)):
                 print(sheet_name + " Sheet Skipped")
@@ -309,7 +272,6 @@ class XlsToCsv():
                                             non_empty_col_data.append(col_val)
                                     else:
                                         col_val = ""  # f"{h_index}"
-
 
                                     if(col_val):
                                         _row.update({h_text: col_val})
