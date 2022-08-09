@@ -7,6 +7,7 @@ import sys
 import itertools
 import logging
 import os
+import messytables
 
 # Include /thirdparty into module search paths, in particular for messytables.
 sys.path.append('/thirdparty')
@@ -123,3 +124,33 @@ def headers_guess(rows):
     header_values = expand_headers(header, data_offset, rows)
 
     return data_offset, header_values
+
+
+def get_table_columns(row_set) -> list:
+    """
+    Read the csv file and tries to guess the the type of each column using messytables library.
+    The type can be 'Integer', 'Decimal', 'String' or 'Bool'
+    :param csv_file_path: path to the csv file with content in it
+    :return: a Zip object where each tuple has two elements: the first is the column name and the second is the type
+    """
+
+    # offset_, headers1 = messytables.headers_guess(row_set.sample, 3)
+    # offset, headers2 = messytables.headers_guess(row_set.sample, 4)
+
+    # print(list(headers1, headers2))
+    offset, headers = messytables.headers_guess(row_set.sample, tolerance=2)
+    row_set.register_processor(messytables.headers_processor(headers))
+
+    row_set.register_processor(
+        messytables.offset_processor(offset + 1))
+
+    types = list(
+        map(messytables.jts.celltype_as_string,
+            messytables.type_guess(row_set.sample, strict=True))
+    )
+
+    # print(headers)
+    # print(types)
+    # print(list(row_set.sample))
+
+    return [offset, headers, types]

@@ -3,12 +3,15 @@ This module reads a file path that is passed in using ActiveDoc.importFile()
 and returns a object formatted so that it can be used by grist for a bulk add records action
 """
 import csv
+import gzip
 import logging
 import os
 
 import chardet
 import messytables
+import messytables.types
 import messytables.excel
+import messytables.jts
 import six
 from six.moves import zip
 
@@ -77,10 +80,19 @@ def parse_open_file(file_obj, orig_name, table_name_hint=None):
                                                  os.path.basename(file_root.decode('utf8')))
 
             # Messytables doesn't guess whether headers are present, so we need to step in.
-            data_offset, headers = import_utils.headers_guess(
-                list(row_set.sample))
+            # OLD --- Removed
+            # data_offset, headers = import_utils.headers_guess(
+            #     list(row_set.sample))
+            # NEW --- Added 09-08-2022 DEVEN
+            data_offset, headers, types = import_utils.get_table_columns(
+                row_set)
+
         else:
             # Let messytables guess header names and the offset of the header.
+            # offset, headers = messytables.headers_guess(row_set.sample) OLD REMOVED ----
+            offset, headers, types = import_utils.get_table_columns(
+                row_set)  # NEW  ADDED ----  09-08-2022 DEVEN
+
             offset, headers = messytables.headers_guess(row_set.sample)
             data_offset = offset + 1    # Add the header line
 
