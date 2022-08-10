@@ -59,7 +59,7 @@ class XlsToCsv():
 
     def is_cav_dealer_file(self):
 
-        if "cav dealer" in self.source_xls_path.lower():
+        if "cav dealer" in self.source_xls_path.lower() or "cav-dealer" in self.source_xls_path.lower():
             return True
 
         return False
