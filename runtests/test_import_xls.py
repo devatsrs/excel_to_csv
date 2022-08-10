@@ -33,22 +33,29 @@ class TestExcelImportXLS(unittest.TestCase):
         self.result_headers = xlsObj.all_sheet_headers
         # return [xlsObj.csv_rows, xlsObj.all_sheet_headers]
 
-    def test_file(self):
+    def _setup_file(self):
         self._parse_file("../excel/test_excel.xlsx")
+
+        # self.assertEqual(len(rows), 16)
+    def test_header(self):
+        self._setup_file()
         expected_header = ["sku", "category", "model number", "status", "product description long", "msrp", "map", "dealer", "master pack qty", "upc", "ean",
                            "weight (lb.)", "dim l (in.)", "dim w (in.)", "dim h (in.)", "country of origin", "taa compliant", "link", "taa compliance", "sheet_name", "ext_category"]
+
         # compare header
         self.assertListEqual(self.result_headers, expected_header)
 
         # self.assertEqual(len(rows), 16)
 
-    def test_test_excel(self):
-
+    def test_length(self):
+        self._setup_file()
         # no of rows
         self.assertEqual(len(self.result_rows), 18)
-        # category working
 
-        # self.assertEqual(len(rows), 16)
+    def test_category(self):
+        self._setup_file()
+        # no of rows
+        self.assertEqual(len(self.result_rows), 18)
 
 
 if __name__ == '__main__':
