@@ -48,12 +48,12 @@ class TestExcelImportXLS(unittest.TestCase):
 
         # self.assertEqual(len(rows), 16)
 
-    def test_length(self):
+    def test_rows(self):
         self._setup_file()
         # no of rows
         self.assertEqual(len(self.result_rows), 18)
 
-    def test_sheet_rows(self):
+    def test_sheet_name(self):
         self._setup_file()
         # no of rows
         SheetName = Counter()
@@ -67,6 +67,19 @@ class TestExcelImportXLS(unittest.TestCase):
         self.assertEqual(SheetName["BSS"], 3)
         self.assertEqual(SheetName["Crown"], 2)
         self.assertEqual(SheetName["DBX"], 5)
+
+    def test_ext_category(self):
+        self._setup_file()
+        # no of rows
+        SheetName = Counter()
+        for row in self.result_rows:
+            category = row["ext_category"].strip()
+            SheetName[category] = SheetName[category] + 1
+            # print(row["sheet_name"])
+
+        # print(SheetName)        Counter({'AKG': 5, 'DBX': 5, 'AMX': 3, 'BSS': 3, 'Crown': 2})
+        self.assertEqual(SheetName['Wired Microphones-Recording'], 1)
+        self.assertEqual(SheetName["USB"], 4)
 
 
 if __name__ == '__main__':
