@@ -13,7 +13,6 @@ iso8601==0.1.12
 json-table-schema==0.2.1
 lxml==4.8.0
 messytables==0.15.2
-numpy==1.22.3
 openpyxl==3.0.10
 pandas==1.4.2
 pefile==2021.9.3
