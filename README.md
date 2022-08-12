@@ -43,3 +43,7 @@ python ./xls_to_csv.py 'D:\laragon\www\gkb_req\pricedonkey\pythontest\excel\test
 # Reference
 
     https://towardsdatascience.com/how-to-work-with-excel-files-in-pandas-c584abb67bfb#:~:text=To%20tell%20pandas%20to%20start,number%20of%20rows%20to%20skip.
+
+# Col match tool
+
+    python -W ignore col_match.py desc Products,Descriptions,MSRP,Dealer%20Price,MAP%20Price
