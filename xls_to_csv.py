@@ -38,7 +38,8 @@ class XlsToCsv():
     def cav_ignore_sheets(self, sheet_name):
         # self.ignore_sheets_words = ["1. Cover & T of C","2. How to Spec & Write P.O.'s" , "9. Demo, Freight and Service","10. Value Add Services","11. Product Warranty","12. Extended Warranty"]
         self.ignore_sheets_words = ["Cover", "T of C", "How to Spec",
-                                    "P.O.'s", "Demo", "Freight", "Service", "Services", "Warranty", "DP Contacts"]
+                                    "P.O.'s", "Demo", "Freight", "Service", "Services", "Warranty", "DP Contacts"
+                                    ]
         for word in self.ignore_sheets_words:
             if word.lower() in sheet_name.lower():
                 return True
@@ -86,7 +87,7 @@ class XlsToCsv():
             #     exit()
 
             for col in data["column_metadata"]:
-                col_name = col["id"].lower().strip()
+                col_name = self.prepar_header_col(col["id"])
 
                 if(col_name in _header):
                     _dup_cols.append(col_name)
@@ -95,7 +96,6 @@ class XlsToCsv():
                     col_name = f"{col_name}_{_dup_col_index}"
 
                 if(col_name):
-                    col_name = col_name.replace('\n', "")
                     _header.append(col_name)
                 else:
                     _blank_col_index += 1
@@ -154,7 +154,8 @@ class XlsToCsv():
 
         if(data["column_metadata"][0]["id"] not in header):
             for index, col in enumerate(data["column_metadata"]):
-                if(len(header) > index and str(col["id"]).strip().lower() not in header):
+                row_text = self.prepar_header_col(col["id"])
+                if(len(header) > index and row_text not in header):
                     _row.update({header[index]: col["id"]})
 
             # insert
@@ -168,6 +169,22 @@ class XlsToCsv():
             return True
         else:
             return False
+
+    def prepar_header_col(self, col_name):
+        col_name = str(col_name).lower().strip()
+        return col_name.replace('\n', "")
+
+    def is_header_col(self, row):
+
+        for row_text in row:
+            row_text = self.prepar_header_col(row_text)
+            if(row_text.find("box") != -1):
+                print(row_text)
+                # exit()
+            if (row_text in self.all_sheet_headers):
+                return True
+
+        return False
 
     def prepare_csv_rows(self):
 
@@ -252,12 +269,12 @@ class XlsToCsv():
                     # Skip if header column name
                     # header row detected  ('Item Name', 'Item Code', 'List', 'Dealer', 'Weight', 'Length', 'Width', 'Height')
 
-                    header_col_name_found = False
-                    for row_text in row:
-                        if (str(row_text).lower() in self.all_sheet_headers):
-                            header_col_name_found = True
-                            break
-                    if(header_col_name_found):
+                    # header_col_name_found = False
+                    # for row_text in row:
+                    #     if (str(row_text).lower() in self.all_sheet_headers):
+                    #         header_col_name_found = True
+                    #         break
+                    if(self.is_header_col(row)):
                         print("header row detected ", row)
                         continue
 
