@@ -14,7 +14,6 @@ json-table-schema==0.2.1
 lxml==4.8.0
 messytables==0.15.2
 openpyxl==3.0.10
-pandas==1.4.2
 pefile==2021.9.3
 pycodestyle==2.9.0
 pyinstaller==5.0
