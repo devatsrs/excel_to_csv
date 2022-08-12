@@ -55,7 +55,7 @@ environment setup
 
 https://realpython.com/python-virtual-environments-a-primer/
 py -m venv venv
-./venv/Scripts/activate
+source ./venv/Scripts/activate
 venv/Scripts/python  -m pip install -r requirements.txt
 
 python -m pip freeze
@@ -75,3 +75,11 @@ sudo -u daemon /opt/bitnami/apache/htdocs/excel_to_csv/venv/bin/python3 /opt/bit
 
 
 /opt/bitnami/apache/htdocs/wp-content/uploads/sites/7/2022/04
+
+------------ Dev
+python -m venv venv
+source ./venv/Scripts/activate
+venv/Scripts/python -m pip install --upgrade pip
+venv/Scripts/python  -m pip install -r requirements.txt
+
+

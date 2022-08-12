@@ -3,12 +3,15 @@ This module reads a file path that is passed in using ActiveDoc.importFile()
 and returns a object formatted so that it can be used by grist for a bulk add records action
 """
 import csv
+import gzip
 import logging
 import os
 
 import chardet
 import messytables
+import messytables.types
 import messytables.excel
+import messytables.jts
 import six
 from six.moves import zip
 
@@ -39,7 +42,55 @@ def override_dialect(self):
 messytables.CSVRowSet._dialect = property(override_dialect)
 
 
+def _get_table_columns(file_path: str, orig_name: str) -> zip:
+    """
+    Read the csv file and tries to guess the the type of each column using messytables library.
+    The type can be 'Integer', 'Decimal', 'String' or 'Bool'
+    :param csv_file_path: path to the csv file with content in it
+    :return: a Zip object where each tuple has two elements: the first is the column name and the second is the type
+    """
+
+    with open(file_path, "rb") as f:
+        # return parse_open_file(f, orig_name, table_name_hint=None)
+
+        file_root, file_ext = os.path.splitext(orig_name)
+        table_set = messytables.any.any_tableset(
+            f, extension=file_ext, auto_detect=False)
+
+        # table_set = CSVTableSet(csvfile)
+
+        row_set = table_set.tables[0]
+
+        # offset_, headers1 = messytables.headers_guess(row_set.sample, 3)
+        # offset, headers2 = messytables.headers_guess(row_set.sample, 4)
+
+        # print(list(headers1, headers2))
+        offset, headers = messytables.headers_guess(row_set.sample, 2)
+
+        row_set.register_processor(messytables.headers_processor(headers))
+
+        row_set.register_processor(
+            messytables.offset_processor(offset + 1))
+
+        types = list(
+            map(messytables.jts.celltype_as_string,
+                messytables.type_guess(row_set.sample, strict=True))
+        )
+
+        # print(headers)
+        # print(types)
+        # print(list(row_set.sample))
+
+        return [headers, types]
+
+
 def parse_file(file_path, orig_name, parse_options=None, table_name_hint=None, num_rows=None):
+
+    # headers, types = _get_table_columns(file_path, orig_name)
+    # print(headers)
+    # print(types)
+
+    # exit()
     # pylint: disable=unused-argument
     # print(file_path)
     with open(file_path, "rb") as f:
@@ -51,6 +102,14 @@ def parse_file(file_path, orig_name, parse_options=None, table_name_hint=None, n
             if six.PY2 and e.args and isinstance(e.args[0], six.string_types):
                 raise Exception(e.args[0])
             raise
+
+# def rowset_as_jts(rowset, headers=None, types=None):
+#     ''' Create a json table schema from a rowset
+#     '''
+#     _, headers = messytables.headers_guess(rowset.sample)
+#     types = map(celltype_as_string, messytables.type_guess(rowset.sample))
+
+#     return headers_and_typed_as_jts(headers, types)
 
 
 def parse_open_file(file_obj, orig_name, table_name_hint=None):
@@ -77,12 +136,41 @@ def parse_open_file(file_obj, orig_name, table_name_hint=None):
                                                  os.path.basename(file_root.decode('utf8')))
 
             # Messytables doesn't guess whether headers are present, so we need to step in.
-            data_offset, headers = import_utils.headers_guess(
-                list(row_set.sample))
+            # OLD --- Removed
+            # data_offset, headers = import_utils.headers_guess(
+            #     list(row_set.sample))
+            # NEW --- Added 09-08-2022 DEVEN
+            data_offset, headers, types = import_utils.get_table_columns(
+                row_set)
+
         else:
             # Let messytables guess header names and the offset of the header.
-            offset, headers = messytables.headers_guess(row_set.sample)
+            # offset, headers = messytables.headers_guess(row_set.sample) OLD REMOVED ----
+            offset, headers, types = import_utils.get_table_columns(
+                row_set)  # NEW  ADDED ----  09-08-2022 DEVEN
+
+            # types = messytables.type_guess(row_set.sample, types=[
+            #     messytables.types.DateType,
+            #     messytables.types.IntegerType,
+            #     messytables.types.DecimalType,
+            #     messytables.types.CurrencyType,
+            #     messytables.types.StringType,
+            # ], strict=True)
+
             data_offset = offset + 1    # Add the header line
+
+            # if(data_offset == 7):
+
+            #     print("types")
+            #     print(types)
+            #     print("row_set.sample")
+            #     print(list(row_set.sample))
+            #     print("table_name")
+            #     print(table_name)
+            #     print("data_offset")
+            #     print(data_offset)
+            #     print(headers)
+            #     exit()
 
         # Make sure all header values are strings.
         for i, header in enumerate(headers):

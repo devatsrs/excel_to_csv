@@ -23,6 +23,11 @@ sudo -u daemon /opt/bitnami/apache/htdocs/excel_to_csv/venv/bin/python3 /opt/bit
 sudo -u daemon /opt/bitnami/apache/htdocs/excel_to_csv/venv/bin/python3 /opt/bitnami/apache/htdocs/excel_to_csv/xls_to_csv.py /opt/bitnami/apache/htdocs/wp-
 content/uploads/sites/7/2022/04/DMR-Price-List-1-1-2022.xlsx /opt/bitnami/apache/htdocs/wp-content/uploads/sites/7/2022/04/DMR-Price-List-1-1-2022.csv
 
+# Unit test 
+
+    python -m unittest -v runtests/test_import_xls.py
+    python -m unittest discover -s  runtests/ -v    
+    
 # Execute
 
 python ./xls_to_csv.py [souce_excel_path] [destination_csv_path]

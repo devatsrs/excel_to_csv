@@ -38,7 +38,8 @@ class XlsToCsv():
     def cav_ignore_sheets(self, sheet_name):
         # self.ignore_sheets_words = ["1. Cover & T of C","2. How to Spec & Write P.O.'s" , "9. Demo, Freight and Service","10. Value Add Services","11. Product Warranty","12. Extended Warranty"]
         self.ignore_sheets_words = ["Cover", "T of C", "How to Spec",
-                                    "P.O.'s", "Demo", "Freight", "Service", "Services", "Warranty", "DP Contacts"]
+                                    "P.O.'s", "Demo", "Freight", "Service", "Services", "Warranty", "DP Contacts"
+                                    ]
         for word in self.ignore_sheets_words:
             if word.lower() in sheet_name.lower():
                 return True
@@ -50,11 +51,11 @@ class XlsToCsv():
         return {
             0: [],
             1: [],
-            2: ["LASER Based Systems",	"lumens / contrast",	"Part #",	"List Price", "1-5 Units", "6-19 Units",	"20+ Units / Reg",	"MSRP",	"Dlr Cost", "sheet_name", "ext_category"],
-            3: ["LASER Based Systems",	"lumens / contrast",	"Part #",	"List Price",	"1-5 Units", "6-19 Units",	"20+ Units / Reg",	"MSRP", "Dlr Cost", "sheet_name", "ext_category"],
-            4: ["System1",	"lumens / contrast",	"Part #",	"List Price",	"1-5 Units", "6-19 Units",	"20+ Units / Reg",		"MSRP",	"Dlr Cost", "sheet_name", "ext_category"],
-            5: ["LASER Based Systems",	"lumens / contrast",	"Part #",	"List Price",	"Dealer Cost",	"MSRP",	"Dlr Cost", "sheet_name", "ext_category"],
-            6: ["M-Vision", 	"Warranty",	"Part #",	"List Price",	"Dealer Cost", "sheet_name", "ext_category"],
+            2: ["laser based systems",	"lumens / contrast",	"part #",	"list price", "1-5 units", "6-19 units",	"20+ units / reg",	"msrp",	"dlr cost", "sheet_name", "ext_category"],
+            3: ["laser based systems",	"lumens / contrast",	"part #",	"list price",	"1-5 units", "6-19 units",	"20+ units / reg",	"msrp", "dlr cost", "sheet_name", "ext_category"],
+            4: ["system1",	"lumens / contrast",	"part #",	"list price",	"1-5 units", "6-19 units",	"20+ units / reg",		"msrp",	"dlr cost", "sheet_name", "ext_category"],
+            5: ["laser based systems",	"lumens / contrast",	"part #",	"list price",	"dealer cost",	"msrp",	"dlr cost", "sheet_name", "ext_category"],
+            6: ["m-vision", 	"warranty",	"part #",	"list price",	"dealer cost", "sheet_name", "ext_category"],
         }
 
     def is_cav_dealer_file(self):
@@ -81,8 +82,12 @@ class XlsToCsv():
                 self.header[sheet_index] = _header
                 continue
 
+            # if(sheet_index == 9):
+            #     print(data["column_metadata"])
+            #     exit()
+
             for col in data["column_metadata"]:
-                col_name = col["id"].lower()
+                col_name = self.prepar_header_col(col["id"])
 
                 if(col_name in _header):
                     _dup_cols.append(col_name)
@@ -91,7 +96,6 @@ class XlsToCsv():
                     col_name = f"{col_name}_{_dup_col_index}"
 
                 if(col_name):
-                    col_name = col_name.replace('\n', "")
                     _header.append(col_name)
                 else:
                     _blank_col_index += 1
@@ -108,6 +112,9 @@ class XlsToCsv():
             self.cav_dealer_prepare_header_by_sheet()
         else:
             self.prepare_header_by_sheet()
+
+        # self.header[9].remove("__1__")
+        # self.header[9].remove("__2__")
 
         # look through dict and merge array
         self.all_sheet_headers = []
@@ -147,8 +154,10 @@ class XlsToCsv():
 
         if(data["column_metadata"][0]["id"] not in header):
             for index, col in enumerate(data["column_metadata"]):
-                if(len(header) > index and col["id"].lower() not in header):
+                row_text = self.prepar_header_col(col["id"])
+                if(len(header) > index and row_text not in header):
                     _row.update({header[index]: col["id"]})
+
             # insert
             all_row_empty = all(
                 element == "" for element in list(_row.values()))
@@ -160,6 +169,22 @@ class XlsToCsv():
             return True
         else:
             return False
+
+    def prepar_header_col(self, col_name):
+        col_name = str(col_name).lower().strip()
+        return col_name.replace('\n', "")
+
+    def is_header_col(self, row):
+
+        for row_text in row:
+            row_text = self.prepar_header_col(row_text)
+            if(row_text.find("box") != -1):
+                print(row_text)
+                # exit()
+            if (row_text in self.all_sheet_headers):
+                return True
+
+        return False
 
     def prepare_csv_rows(self):
 
@@ -183,7 +208,10 @@ class XlsToCsv():
 
             header = self.header[sheet_index]
             _row = dict()
-
+            # print(header)
+            # print(data)
+            # print()
+            # print()
             self.header_less_row(data, header)  # fix for header less sheets
 
             """
@@ -213,6 +241,9 @@ class XlsToCsv():
             """
             rows = zip(*data["table_data"])
 
+            # if(sheet_index == 1):
+            #     print(list(rows))
+            #     exit()
             """
                 Loop through rows
                 prepare new row with required format
@@ -238,12 +269,12 @@ class XlsToCsv():
                     # Skip if header column name
                     # header row detected  ('Item Name', 'Item Code', 'List', 'Dealer', 'Weight', 'Length', 'Width', 'Height')
 
-                    header_col_name_found = False
-                    for row_text in row:
-                        if (row_text in self.all_sheet_headers):
-                            header_col_name_found = True
-                            break
-                    if(header_col_name_found):
+                    # header_col_name_found = False
+                    # for row_text in row:
+                    #     if (str(row_text).lower() in self.all_sheet_headers):
+                    #         header_col_name_found = True
+                    #         break
+                    if(self.is_header_col(row)):
                         print("header row detected ", row)
                         continue
 
@@ -283,7 +314,7 @@ class XlsToCsv():
                     # print(non_empty_col_data)
                     if len(non_empty_col_data) == 1:
                         category = non_empty_col_data.pop()
-                        continue
+                        # continue
                         # print(category)
                         # exit()
 
@@ -342,35 +373,35 @@ class XlsToCsv():
             #     writer.writerow(key_val)
 
 
-# argument for souce filename
-# argument for destination filename
-source_xls_path = sys.argv[1]
-dest_csv_path = sys.argv[2]
-# print(source_xls_path)
-# print(dest_csv_path)
+if __name__ == '__main__':
+    # argument for souce filename
+    # argument for destination filename
+    source_xls_path = sys.argv[1]
+    dest_csv_path = sys.argv[2]
+    # print(source_xls_path)
+    # print(dest_csv_path)
 
-# xlsObj = XlsToCsv('test_excel.xlsx')
-xlsObj = XlsToCsv(source_xls_path, dest_csv_path)
+    # xlsObj = XlsToCsv('test_excel.xlsx')
+    xlsObj = XlsToCsv(source_xls_path, dest_csv_path)
 
-# print(xlsObj.source_xls_path)
-# print(xlsObj.dest_csv_path)
+    # print(xlsObj.source_xls_path)
+    # print(xlsObj.dest_csv_path)
 
-# $ py ./xls_to_csv.py ./excel/AVR\ Pricelist\ -\ Roland\ Pro\ AV\ Jan\ 24th\ 2022.xlsm ./csv/AVR\ Pricelist\ -\ Roland\ Pro\ AV\ Jan\ 24th\ 2022.csv
-# $ py ./xls_to_csv.py ./excel/AVR\ Pricelist\ -\ Roland\ Pro\ AV\ Jan\ 24th\ 2022.xlsm ./csv/AVR\ Pricelist\ -\ Roland\ Pro\ AV\ Jan\ 24th\ 2022.csv
-# exit()
+    # $ py ./xls_to_csv.py ./excel/AVR\ Pricelist\ -\ Roland\ Pro\ AV\ Jan\ 24th\ 2022.xlsm ./csv/AVR\ Pricelist\ -\ Roland\ Pro\ AV\ Jan\ 24th\ 2022.csv
+    # $ py ./xls_to_csv.py ./excel/AVR\ Pricelist\ -\ Roland\ Pro\ AV\ Jan\ 24th\ 2022.xlsm ./csv/AVR\ Pricelist\ -\ Roland\ Pro\ AV\ Jan\ 24th\ 2022.csv
+    # exit()
 
-# xlsObj = XlsToCsv('Harman Pro Pricing 010522.xlsx')
-# xlsObj = XlsToCsv("EAW Dealer Price List April 2022.xlsx")
-# xlsObj = XlsToCsv("DMR Price List 1-1-2022.xlsx")
-# xlsObj = XlsToCsv("AVR Pricelist - Roland Pro AV Jan 24th 2022.xlsm")
-# xlsObj = XlsToCsv("Visionary Solutions - Dealer Price List - Effective Feb 15 2022.xlsx")
-xlsObj.convert_n_load_parsed_data()
-xlsObj.prepare_csv_rows()
-xlsObj.write()
-print("CSV conversion done!")
-# print (xlsObj.csvfilepath[0])
+    # xlsObj = XlsToCsv('Harman Pro Pricing 010522.xlsx')
+    # xlsObj = XlsToCsv("EAW Dealer Price List April 2022.xlsx")
+    # xlsObj = XlsToCsv("DMR Price List 1-1-2022.xlsx")
+    # xlsObj = XlsToCsv("AVR Pricelist - Roland Pro AV Jan 24th 2022.xlsm")
+    # xlsObj = XlsToCsv("Visionary Solutions - Dealer Price List - Effective Feb 15 2022.xlsx")
+    xlsObj.convert_n_load_parsed_data()
+    xlsObj.prepare_csv_rows()
+    xlsObj.write()
+    print("CSV conversion done!")
+    # print (xlsObj.csvfilepath[0])
 
-
-# db = DB()
-# print(xlsObj.csvfilepath[0])
-# db.insert(title="test_excel",columns=xlsObj.header,csvpath=os.path.normpath(xlsObj.csvfilepath[0]))
+    # db = DB()
+    # print(xlsObj.csvfilepath[0])
+    # db.insert(title="test_excel",columns=xlsObj.header,csvpath=os.path.normpath(xlsObj.csvfilepath[0]))
