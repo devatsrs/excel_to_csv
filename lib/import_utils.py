@@ -138,7 +138,13 @@ def get_table_columns(row_set) -> list:
     # offset, headers2 = messytables.headers_guess(row_set.sample, 4)
 
     # print(list(headers1, headers2))
-    offset, headers = messytables.headers_guess(row_set.sample, tolerance=2)
+    offset, headers = messytables.headers_guess(row_set.sample, tolerance=1)
+    if(not like_header_col(headers)):
+        print(headers)
+        print("Not like header")
+        offset, headers = messytables.headers_guess(
+            row_set.sample, tolerance=2)
+
     row_set.register_processor(messytables.headers_processor(headers))
 
     row_set.register_processor(
@@ -154,3 +160,18 @@ def get_table_columns(row_set) -> list:
     # print(list(row_set.sample))
 
     return [offset, headers, types]
+
+
+def like_header_col(row):
+
+    for row_text in row:
+        row_text = prepar_header_col(row_text)
+        if (row_text.find("price") >= 0 or row_text.find("cost") >= 0 or row_text.find("model") >= 0 or row_text.find("type") >= 0):
+            return True
+
+    return False
+
+
+def prepar_header_col(col_name):
+    col_name = str(col_name).lower().strip()
+    return col_name.replace('\n', "")
