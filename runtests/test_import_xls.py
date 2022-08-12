@@ -4,6 +4,7 @@ import math
 import os
 import unittest
 import xls_to_csv
+from collections import Counter
 
 
 class TestExcelImportXLS(unittest.TestCase):
@@ -52,10 +53,20 @@ class TestExcelImportXLS(unittest.TestCase):
         # no of rows
         self.assertEqual(len(self.result_rows), 18)
 
-    def test_category(self):
+    def test_sheet_rows(self):
         self._setup_file()
         # no of rows
-        self.assertEqual(len(self.result_rows), 18)
+        SheetName = Counter()
+        for row in self.result_rows:
+            SheetName[row["sheet_name"]] = SheetName[row["sheet_name"]] + 1
+            # print(row["sheet_name"])
+
+        # print(SheetName)        Counter({'AKG': 5, 'DBX': 5, 'AMX': 3, 'BSS': 3, 'Crown': 2})
+        self.assertEqual(SheetName['AMX'], 3)
+        self.assertEqual(SheetName["AKG"], 5)
+        self.assertEqual(SheetName["BSS"], 3)
+        self.assertEqual(SheetName["Crown"], 2)
+        self.assertEqual(SheetName["DBX"], 5)
 
 
 if __name__ == '__main__':
