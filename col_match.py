@@ -21,5 +21,6 @@ Ratios = process.extract(str2Match, strOptions)
 # print(Ratios)
 # You can also select the string with the highest matching percentage
 highest = process.extractOne(str2Match, strOptions)
+
 # print(highest)
-print(json.dumps(highest))
+print(json.dumps(dict({"master_column": highest[0], "accuracy": highest[1]})))
