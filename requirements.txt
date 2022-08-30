@@ -16,8 +16,8 @@ messytables==0.15.2
 openpyxl==3.0.10
 pefile==2021.9.3
 pycodestyle==2.9.0
-pyinstaller==5.0
-pyinstaller-hooks-contrib==2022.4
+# pyinstaller==5.0
+# pyinstaller-hooks-contrib==2022.4
 python-dateutil==2.8.2
 python-magic==0.4.25
 pytz==2022.1
@@ -25,7 +25,7 @@ pywin32-ctypes==0.2.0
 requests==2.27.1
 six==1.16.0
 toml==0.10.2
-typing_extensions==4.2.0
+# typing_extensions==4.2.0
 urllib3==1.26.9
 webencodings==0.5.1
 xlrd==1.2.0
