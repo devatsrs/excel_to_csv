@@ -8,6 +8,7 @@ python3 --version
 export PATH="$HOME/.local/bin:$PATH"
 pip --version
 sudo apt-get install python3.7-dev default-libmysqlclient-dev
+sudo apt-get install python3-pip
 
 Setup 
 sudo apt-get install python3-venv
@@ -19,3 +20,6 @@ sudo -u daemon /opt/bitnami/apache/htdocs/excel_to_csv/venv/bin/python3 /opt/bit
 
 ----------------------------------------
 Test 
+
+
+sudo -u daemon /opt/bitnami/apache/htdocs_dev/excel_to_csv/venv/bin/python3 /opt/bitnami/apache/htdocs_dev/excel_to_csv/venv/bin/pip3 install -r requirements.txt
