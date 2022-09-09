@@ -17,7 +17,8 @@ class XlsToCsv():
         self.skip_sheets_list = [
             "Legal",  # Shure
             "Terms and Conditions",
-            "Overview"
+            "Overview",
+            "Navigation" # Leon-PriceGuide-COMM-2021-DLR
         ]
 
     # Read exce file and load parsed data
@@ -38,7 +39,7 @@ class XlsToCsv():
     def cav_ignore_sheets(self, sheet_name):
         # self.ignore_sheets_words = ["1. Cover & T of C","2. How to Spec & Write P.O.'s" , "9. Demo, Freight and Service","10. Value Add Services","11. Product Warranty","12. Extended Warranty"]
         self.ignore_sheets_words = ["Cover", "T of C", "How to Spec",
-                                    "P.O.'s", "Demo", "Freight", "Service", "Services", "Warranty", "DP Contacts"
+                                    "P.O.'s", "Demo", "Freight", "Service", "Services", "Warranty", "DP Contacts", 
                                     ]
         for word in self.ignore_sheets_words:
             if word.lower() in sheet_name.lower():
