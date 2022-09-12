@@ -18,7 +18,8 @@ class XlsToCsv():
             "Legal",  # Shure
             "Terms and Conditions",
             "Overview",
-            "Navigation" # Leon-PriceGuide-COMM-2021-DLR
+            "Navigation", # Leon-PriceGuide-COMM-2021-DLR
+            "Cover" # B-Tech AV Mounts LLC Price List 2021 (Release 1.0) - Sapphire Partner
         ]
 
     # Read exce file and load parsed data
