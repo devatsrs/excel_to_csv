@@ -174,7 +174,7 @@ class XlsToCsv():
 
     def prepar_header_col(self, col_name):
         col_name = str(col_name).lower().strip()
-        return col_name.replace('\n', "")
+        return col_name.replace('\n', " ")
 
     def is_header_col(self, row):
 
