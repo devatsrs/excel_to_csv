@@ -1,6 +1,30 @@
 # Inroduction
 
-    This project is make from https://github.com/gristlabs/grist-core to
+This project is made from https://github.com/gristlabs/grist-core with add on following requirements.
+
+# Challenges & Our Approach 
+
+## Challenges
+
+    1. Convert Excel to CSV
+    2. Identify Headers 
+    3. Identify Category 
+    4. Identify Sheets to be import
+    5. Duplicate Column Name
+    6. Parallel Tables
+    7. Blank Header Title 
+
+## Our Approach 
+
+    1. Python Messytable library
+    2. Python Messytable library
+    3. Custom Logic - Heading like text above group of price list with rest columns empty
+    4. Custom Logic - Manually added skip list 
+    5. Rename with post fix _1 ie "dealer price_1"
+    6. We applies same rule no #5
+    7. Blank Header will replace ie "__1__"
+
+
 
 # excel_to_csv
 
