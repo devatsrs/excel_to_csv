@@ -32,20 +32,25 @@ export PATH="$HOME/.local/bin:$PATH"
 
 # Setup
 
-sudo apt-get install python3-venv
+## Dev Setup - Win
 
-python3 -m venv venv
+    python -m venv venv
+    source ./venv/Scripts/activate
+    venv/Scripts/python -m pip install --upgrade pip
+    venv/Scripts/python  -m pip install -r requirements.txt
 
-sudo chown -R bitnami:daemon /opt/bitnami/apache/htdocs
+## Server Setup 
 
-sudo chmod -R 775 /opt/bitnami/apache/htdocs
-
-sudo -u daemon /opt/bitnami/apache/htdocs/excel_to_csv/venv/bin/python3 /opt/bitnami/apache/htdocs/excel_to_csv/venv/bin/pip3 install -r requirements.txt
+    sudo apt-get install python3-venv
+    python3 -m venv venv
+    sudo chown -R bitnami:daemon /opt/bitnami/apache/htdocs
+    sudo chmod -R 775 /opt/bitnami/apache/htdocs
+    sudo -u daemon /opt/bitnami/apache/htdocs/excel_to_csv/venv/bin/python3 /opt/bitnami/apache/htdocs/excel_to_csv/venv/bin/pip3 install -r requirements.txt
 
 # Test
 
-sudo -u daemon /opt/bitnami/apache/htdocs/excel_to_csv/venv/bin/python3 /opt/bitnami/apache/htdocs/excel_to_csv/xls_to_csv.py /opt/bitnami/apache/htdocs/wp-
-content/uploads/sites/7/2022/04/DMR-Price-List-1-1-2022.xlsx /opt/bitnami/apache/htdocs/wp-content/uploads/sites/7/2022/04/DMR-Price-List-1-1-2022.csv
+    sudo -u daemon /opt/bitnami/apache/htdocs/excel_to_csv/venv/bin/python3 /opt/bitnami/apache/htdocs/excel_to_csv/xls_to_csv.py /opt/bitnami/apache/htdocs/wp-
+    content/uploads/sites/7/2022/04/DMR-Price-List-1-1-2022.xlsx /opt/bitnami/apache/htdocs/wp-content/uploads/sites/7/2022/04/DMR-Price-List-1-1-2022.csv
 
 # Unit test 
 
@@ -54,10 +59,10 @@ content/uploads/sites/7/2022/04/DMR-Price-List-1-1-2022.xlsx /opt/bitnami/apache
     
 # Execute
 
-python ./xls_to_csv.py [souce_excel_path] [destination_csv_path]
+    python ./xls_to_csv.py [souce_excel_path] [destination_csv_path]
 
-python ./xls_to_csv.py ./excel/test_excel.xlsx ./csv/test_excel.csv
-python ./xls_to_csv.py 'D:\laragon\www\gkb_req\pricedonkey\pythontest\excel\test_excel.xlsx' 'D:\laragon\www\gkb_req\pricedonkey\pythontest\csv\test_excel.csv'
+    python ./xls_to_csv.py ./excel/test_excel.xlsx ./csv/test_excel.csv
+    python ./xls_to_csv.py 'D:\laragon\www\gkb_req\pricedonkey\pythontest\excel\test_excel.xlsx' 'D:\laragon\www\gkb_req\pricedonkey\pythontest\csv\test_excel.csv'
 
 # Todo
 
