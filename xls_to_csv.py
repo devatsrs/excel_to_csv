@@ -19,14 +19,18 @@ class XlsToCsv():
             "Terms and Conditions",
             "Overview",
             "Navigation", # Leon-PriceGuide-COMM-2021-DLR
-            "Cover" # B-Tech AV Mounts LLC Price List 2021 (Release 1.0) - Sapphire Partner
+            "Cover", # B-Tech AV Mounts LLC Price List 2021 (Release 1.0) - Sapphire Partner
+
+            # CAV
+            "Cover", "T of C", "How to Spec","P.O.'s", "Demo", "Freight", "Service", "Services", "Warranty", "DP Contacts", 
         ]
 
     # Read exce file and load parsed data
 
     def convert_n_load_parsed_data(self):
-        self.parsed_data = import_xls.parse_file(
-            file_path=self.source_xls_path, orig_name=os.path.basename(self.source_xls_path))
+        # self.parsed_data = import_xls.parse_file(
+        #     file_path=self.source_xls_path, orig_name=os.path.basename(self.source_xls_path))
+        self.parsed_data = import_xls.parse_file(file_path=self.source_xls_path)
         # print(self.parsed_data[1])
         # exit()
 
@@ -34,41 +38,13 @@ class XlsToCsv():
         return self.skip_sheets_list
 
     def should_skip_sheet(self, sheet_name):
-        return sheet_name.strip() in self.skip_sheets()
-
-    # for cav dealer sheet
-    def cav_ignore_sheets(self, sheet_name):
-        # self.ignore_sheets_words = ["1. Cover & T of C","2. How to Spec & Write P.O.'s" , "9. Demo, Freight and Service","10. Value Add Services","11. Product Warranty","12. Extended Warranty"]
-        self.ignore_sheets_words = ["Cover", "T of C", "How to Spec",
-                                    "P.O.'s", "Demo", "Freight", "Service", "Services", "Warranty", "DP Contacts", 
-                                    ]
-        for word in self.ignore_sheets_words:
-            if word.lower() in sheet_name.lower():
+        for word in self.skip_sheets_list:
+            if word.strip().lower() in sheet_name.lower():
                 return True
-
         return False
+        # return sheet_name.strip().lower() in self.skip_sheets()
 
-    # for cav dealer sheet
-    def cav_dealer_header(self):
-        return {
-            0: [],
-            1: [],
-            2: ["laser based systems",	"lumens / contrast",	"part #",	"list price", "1-5 units", "6-19 units",	"20+ units / reg",	"msrp",	"dlr cost", "sheet_name", "ext_category"],
-            3: ["laser based systems",	"lumens / contrast",	"part #",	"list price",	"1-5 units", "6-19 units",	"20+ units / reg",	"msrp", "dlr cost", "sheet_name", "ext_category"],
-            4: ["system1",	"lumens / contrast",	"part #",	"list price",	"1-5 units", "6-19 units",	"20+ units / reg",		"msrp",	"dlr cost", "sheet_name", "ext_category"],
-            5: ["laser based systems",	"lumens / contrast",	"part #",	"list price",	"dealer cost",	"msrp",	"dlr cost", "sheet_name", "ext_category"],
-            6: ["m-vision", 	"warranty",	"part #",	"list price",	"dealer cost", "sheet_name", "ext_category"],
-        }
-
-    def is_cav_dealer_file(self):
-
-        if "cav dealer" in self.source_xls_path.lower() or "cav-dealer" in self.source_xls_path.lower():
-            return True
-
-        return False
-
-    def cav_dealer_prepare_header_by_sheet(self):
-        self.header = self.cav_dealer_header()
+ 
 
     def prepare_header_by_sheet(self):
 
@@ -79,7 +55,8 @@ class XlsToCsv():
             _dup_cols = []
 
             sheet_name = data["table_name"]
-            if(sheet_name in self.skip_sheets()):
+            # if(sheet_name in self.skip_sheets()):
+            if(self.should_skip_sheet(sheet_name)):
                 print(sheet_name + " Sheet Skipped")
                 self.header[sheet_index] = _header
                 continue
@@ -110,10 +87,7 @@ class XlsToCsv():
 
     def prepare_header(self):
 
-        if (self.is_cav_dealer_file()):
-            self.cav_dealer_prepare_header_by_sheet()
-        else:
-            self.prepare_header_by_sheet()
+        self.prepare_header_by_sheet()
 
         # self.header[9].remove("__1__")
         # self.header[9].remove("__2__")
@@ -142,11 +116,11 @@ class XlsToCsv():
         # Add extra cols
         self.all_sheet_headers.append("sheet_name")
         self.all_sheet_headers.append("ext_category")
-        # print(self.header)
-        # print(self.all_sheet_headers)
-        # # print(len(self.all_sheet_headers))
-        # print(self.header_vs_all_mapping)
-        # print(len(self.header_vs_all_mapping))
+        print(self.header)
+        print(self.all_sheet_headers)
+        print(len(self.all_sheet_headers))
+        print(self.header_vs_all_mapping)
+        print(len(self.header_vs_all_mapping))
         # exit()
 
     def header_less_row(self, data, header):
@@ -196,10 +170,6 @@ class XlsToCsv():
         # Loop through sheets and Prepare csv data
         for sheet_index, data in enumerate(self.parsed_data[1]):
             sheet_name = data["table_name"]
-
-            if(self.is_cav_dealer_file() and self.cav_ignore_sheets(sheet_name)):
-                print(sheet_name + " Sheet Skipped")
-                continue
 
             # Skip extra sheets , setup header
             if(self.should_skip_sheet(sheet_name)):
@@ -278,7 +248,7 @@ class XlsToCsv():
                     #         break
                     if(self.is_header_col(row)):
                         print("header row detected ", row)
-                        continue
+                        # continue
 
                     # All indexes we have
                     # self.all_sheet_headers index

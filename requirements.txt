@@ -4,14 +4,14 @@ certifi==2021.10.8
 chardet==4.0.0
 charset-normalizer==2.0.12
 distro==1.7.0
-et-xmlfile==1.1.0
+et-xmlfile==1.0.1
 future==0.18.2
 fuzzywuzzy==0.18.0
 html5lib==1.1
 idna==3.3
 iso8601==0.1.12
 json-table-schema==0.2.1
-lxml==4.8.0
+lxml==4.6.3
 messytables==0.15.2
 openpyxl==3.0.10
 pefile==2021.9.3
@@ -27,5 +27,17 @@ six==1.16.0
 toml==0.10.2
 # typing_extensions==4.2.0
 urllib3==1.26.9
-webencodings==0.5.1
+webencodings==0.5
 xlrd==1.2.0
+wrapt==1.12.1
+roman==2.0.0
+json_table_schema==0.2.1
+enum34==1.1.10
+  
+   
+
+
+
+
+
+ 
