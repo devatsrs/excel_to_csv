@@ -22,7 +22,7 @@ class XlsToCsv():
             "Terms and Conditions",
             "Overview",
             "Navigation", # Leon-PriceGuide-COMM-2021-DLR
-            "Cover" # B-Tech AV Mounts LLC Price List 2021 (Release 1.0) - Sapphire Partner
+            "Cover", # B-Tech AV Mounts LLC Price List 2021 (Release 1.0) - Sapphire Partner
             "T of C", "How to","P.O.'s", "Demo", "Freight", "Service", "Warranty", "Contacts",  #
         ]
         self.logging = Log()
@@ -43,7 +43,7 @@ class XlsToCsv():
         return self.skip_sheets_list
 
     def should_skip_sheet(self, sheet_name):
-        for word in self.skip_sheets_list:
+        for word in self.skip_sheets():
             if word.lower().strip() in sheet_name.lower():
                 return True
 
@@ -118,25 +118,27 @@ class XlsToCsv():
         self.all_sheet_headers.append("sheet_name")
         self.all_sheet_headers.append("ext_category")
 
-        
+        for h_index in self.header:
+            # Detect how many empty cols detected __1__
+            empty_cols_found = list(filter(lambda col: match('^__\d+__$', col) , self.header[h_index]))
+            if(len(empty_cols_found) > 5):
+                self.logging.debug("self.header")
+                self.logging.debug(self.header)
+                self.logging.debug("self.all_sheet_headers")
+                self.logging.debug(self.all_sheet_headers)
+                self.logging.debug(len(self.all_sheet_headers))
+                self.logging.debug("self.header_vs_all_mapping")
+                self.logging.debug(self.header_vs_all_mapping)
+                self.logging.debug(len(self.header_vs_all_mapping))
 
-        self.logging.debug(self.header)
-        self.logging.debug(self.all_sheet_headers)
-        self.logging.debug(len(self.all_sheet_headers))
-        self.logging.debug(self.header_vs_all_mapping)
-        self.logging.debug(len(self.header_vs_all_mapping))
+                self.logging.debug("Complex excel detected")
+                self.logging.debug(len(empty_cols_found))
+                self.logging.debug(empty_cols_found)
 
-        # Detect how many empty cols detected __1__
-        empty_cols_found = list(filter(lambda col: match('^__\d+__$', col) , self.all_sheet_headers))
-        if(len(empty_cols_found) > 5):
-            self.logging.debug("Complex excel detected")
-            self.logging.debug(len(empty_cols_found))
-            self.logging.debug(empty_cols_found)
-
-            self.response["status"] = "failed"
-            self.response["message"] = "Complex excel detected"
-            print(json.dumps(xlsObj.response))
-            exit()
+                self.response["status"] = "failed"
+                self.response["message"] = "Complex excel detected"
+                print(json.dumps(xlsObj.response))
+                exit()
 
         # exit()
 
@@ -265,7 +267,7 @@ class XlsToCsv():
                     #         header_col_name_found = True
                     #         break
                     if(self.is_header_col(row)):
-                        self.logging.debug("header row detected " + row)
+                        self.logging.debug("header row detected " + str(row))
                         continue
 
                     # All indexes we have
