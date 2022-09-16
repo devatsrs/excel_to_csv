@@ -1,6 +1,7 @@
 """
 Helper functions for import plugins
 """
+from lib.log  import Log
 from six.moves import zip
 import six
 import sys
@@ -13,7 +14,9 @@ import messytables
 sys.path.append('/thirdparty')
 
 
-log = logging.getLogger(__name__)
+# log = logging.getLogger(__name__)
+log = Log()
+
 
 # Get path to an imported file.
 
@@ -140,8 +143,8 @@ def get_table_columns(row_set) -> list:
     # print(list(headers1, headers2))
     offset, headers = messytables.headers_guess(row_set.sample, tolerance=1)
     if(not like_header_col(headers)):
-        print(headers)
-        print("Not like header")
+        log.info(headers)
+        log.info("Not like header") 
         offset, headers = messytables.headers_guess(
             row_set.sample, tolerance=2)
 
@@ -166,7 +169,7 @@ def like_header_col(row):
 
     for row_text in row:
         row_text = prepar_header_col(row_text)
-        if (row_text.find("price") >= 0 or row_text.find("cost") >= 0 or row_text.find("model") >= 0 or row_text.find("type") >= 0):
+        if (row_text.find("msrp") >= 0 or row_text.find("part") >= 0 or row_text.find("price") >= 0 or row_text.find("cost") >= 0 or row_text.find("model") >= 0 or row_text.find("type") >= 0):
             return True
 
     return False
