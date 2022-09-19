@@ -1,12 +1,16 @@
 # importing module
 import logging
+import os
 
 
 class Log:
 
     def __init__(self) -> None:
         # Create and configure logger
-        logging.basicConfig(filename="./logs/log.log",format='%(asctime)s %(message)s',filemode='a')
+
+        ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) # This is your Project Root
+        log_file_path = ROOT_DIR + "/logs/log.log"
+        logging.basicConfig(filename=log_file_path,format='%(asctime)s %(message)s',filemode='a')
         self.logger = logging.getLogger()
         self.logger.setLevel(logging.DEBUG)
 
