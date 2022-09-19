@@ -37,12 +37,12 @@ class XlsToCsv():
 
         self.log.info("---")
         self.log.info("Parsing"+ self.source_xls_path)
+
         self.parsed_data = import_xls.parse_file(
             file_path=self.source_xls_path, orig_name=os.path.basename(self.source_xls_path))
         
         self.log.debug("parsed_excel done")
-        # print(self.parsed_data[1])
-        # exit()
+        
 
     def skip_sheets(self):
         return self.skip_sheets_list
