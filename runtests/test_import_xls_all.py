@@ -62,7 +62,7 @@ class TestExcelImportXLSAll(unittest.TestCase):
 
                 # print(command)
                 output = subprocess.getoutput(command)
-                # print(output)
+                print(f"output = {output} ")
                 # time.sleep(5)
                 result = json.loads(output)
                 # print(result)

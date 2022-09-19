@@ -1,3 +1,4 @@
+from cmath import log
 import json
 import os
 import sys
@@ -9,7 +10,6 @@ import pprint
 from re import match
 
 
-
 class XlsToCsv():
 
     def __init__(self, source_xls_path, dest_csv_path):
@@ -18,6 +18,7 @@ class XlsToCsv():
         self.header = dict([])
         self.csv_rows = []
         self.response = {}
+        self.ALLOWED_BLANK_COL_NAMES = 50 # percentage 
         self.skip_sheets_list = [
             "Legal",  # Shure
             "Terms and Conditions",
@@ -27,18 +28,19 @@ class XlsToCsv():
             "T of C", "How to","P.O.'s", "Demo", "Freight", "Service", "Warranty", "Contacts",  #
             "Traveler", # 2021 Price Sheet_Silver-Gold_210901-edit.xlsx ->  # Traveler Part Number Generator , Traveler Key
             "Lookups", # 2021 Price Sheet_Silver-Gold_210901-edit.xlsx ->  # Traveler Part Number Generator , Traveler Key, Pricing Lookups1
+            "Specs", # All Terrain Stage System Price August 2021.xlsx
         ]
-        self.logging = Log()
+        self.log = Log()
 
     # Read exce file and load parsed data
     def parsed_excel(self):
 
-        self.logging.info("---")
-        self.logging.info("Parsing"+ self.source_xls_path)
+        self.log.info("---")
+        self.log.info("Parsing"+ self.source_xls_path)
         self.parsed_data = import_xls.parse_file(
             file_path=self.source_xls_path, orig_name=os.path.basename(self.source_xls_path))
         
-        self.logging.debug("parsed_excel done")
+        self.log.debug("parsed_excel done")
         # print(self.parsed_data[1])
         # exit()
 
@@ -62,7 +64,7 @@ class XlsToCsv():
 
             sheet_name = data["table_name"]
             if(self.should_skip_sheet(sheet_name)):
-                self.logging.debug(sheet_name + " Sheet Skipped")
+                self.log.debug(sheet_name + " Sheet Skipped")
                 self.header[sheet_index] = _header
                 continue
 
@@ -124,23 +126,28 @@ class XlsToCsv():
         for h_index in self.header:
             # Detect how many empty cols detected __1__
             empty_cols_found = list(filter(lambda col: match('^__\d+__$', col) , self.header[h_index]))
-            if(len(empty_cols_found) > 5):
-                self.logging.debug("self.header")
-                self.logging.debug(self.header)
-                self.logging.debug("self.all_sheet_headers")
-                self.logging.debug(self.all_sheet_headers)
-                self.logging.debug(len(self.all_sheet_headers))
-                self.logging.debug("self.header_vs_all_mapping")
-                self.logging.debug(self.header_vs_all_mapping)
-                self.logging.debug(len(self.header_vs_all_mapping))
+            total_col = len(self.header[h_index]) 
+            if total_col > 0 :
+                percentage  = ( len(empty_cols_found) / total_col) * 100
+                self.log.debug(f"empty_cols_found = {len(empty_cols_found)} total_col = {total_col} Percentage = {percentage} ")
+                if( percentage >= self.ALLOWED_BLANK_COL_NAMES):
+                    self.log.debug("self.header")
+                    self.log.debug(self.header)
+                    self.log.debug("self.all_sheet_headers")
+                    self.log.debug(self.all_sheet_headers)
+                    self.log.debug(len(self.all_sheet_headers))
+                    self.log.debug("self.header_vs_all_mapping")
+                    self.log.debug(self.header_vs_all_mapping)
+                    self.log.debug(len(self.header_vs_all_mapping))
 
-                self.logging.debug("Complex excel detected")
-                self.logging.debug(len(empty_cols_found))
-                self.logging.debug(empty_cols_found)
+                    self.log.debug("Complex excel detected")
+                    self.log.debug(len(empty_cols_found))
+                    self.log.debug(empty_cols_found)
 
-                self.response["status"] = "failed"
-                self.response["message"] = "Complex excel detected"
-                
+                    self.response["status"] = "failed"
+                    self.response["message"] = "Complex excel detected"
+                    self.response["file"] = self.source_xls_path
+                    
 
         # exit()
 
@@ -195,7 +202,7 @@ class XlsToCsv():
 
             # Skip extra sheets , setup header
             if(self.should_skip_sheet(sheet_name)):
-                self.logging.debug(sheet_name + " Sheet Skipped")
+                self.log.debug(sheet_name + " Sheet Skipped")
                 continue
 
             # print(f"sheet_index {sheet_index}")
@@ -269,7 +276,7 @@ class XlsToCsv():
                     #         header_col_name_found = True
                     #         break
                     if(self.is_header_col(row)):
-                        self.logging.debug("header row detected " + str(row))
+                        self.log.debug("header row detected " + str(row))
                         continue
 
                     # All indexes we have
