@@ -126,11 +126,15 @@ def parse_open_file(file_obj, orig_name, table_name_hint=None):
         # In addition, always prefer UTF8 over ASCII.
         if table_set.encoding == 'ascii':
             table_set.encoding = 'utf8'
+    
 
     export_list = []
     # A table set is a collection of tables:
     for row_set in table_set.tables:
         table_name = row_set.name
+
+        log.debug("---SheetName---")
+        log.debug(table_name)
 
         if isinstance(row_set, messytables.CSVRowSet):
             # For csv files, we can do better for table_name by using the filename.

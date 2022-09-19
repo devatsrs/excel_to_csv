@@ -9,6 +9,7 @@ import pprint
 from re import match
 
 
+
 class XlsToCsv():
 
     def __init__(self, source_xls_path, dest_csv_path):
@@ -24,6 +25,8 @@ class XlsToCsv():
             "Navigation", # Leon-PriceGuide-COMM-2021-DLR
             "Cover", # B-Tech AV Mounts LLC Price List 2021 (Release 1.0) - Sapphire Partner
             "T of C", "How to","P.O.'s", "Demo", "Freight", "Service", "Warranty", "Contacts",  #
+            "Traveler", # 2021 Price Sheet_Silver-Gold_210901-edit.xlsx ->  # Traveler Part Number Generator , Traveler Key
+            "Lookups", # 2021 Price Sheet_Silver-Gold_210901-edit.xlsx ->  # Traveler Part Number Generator , Traveler Key, Pricing Lookups1
         ]
         self.logging = Log()
 
@@ -137,8 +140,7 @@ class XlsToCsv():
 
                 self.response["status"] = "failed"
                 self.response["message"] = "Complex excel detected"
-                print(json.dumps(xlsObj.response))
-                exit()
+                
 
         # exit()
 
@@ -393,9 +395,13 @@ if __name__ == '__main__':
     xlsObj.write()
     logging = Log()
     logging.info("CSV conversion done!")
-    xlsObj.response["status"] = "success"
-    xlsObj.response["message"] = "CSV conversion done!"
-    print(json.dumps(xlsObj.response))
+
+    if(xlsObj.response):
+        print(json.dumps(xlsObj.response))
+    else:        
+        xlsObj.response["status"] = "success"
+        xlsObj.response["message"] = "CSV conversion done!"
+        print(json.dumps(xlsObj.response))
 
     # print (xlsObj.csvfilepath[0])
 
