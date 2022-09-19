@@ -41,7 +41,7 @@ class TestExcelImportXLSAll(unittest.TestCase):
     def test_run_all_excel(self):
 
         # folder path
-        dir_path = r'D:\\laragon\\www\\excel_to_csv\\xls\\'
+        dir_path = r'D:\\laragon\\www\\excel_to_csv\\excel\\'
 
         # Iterate directory
         for xls_path in os.listdir(dir_path):
@@ -54,13 +54,13 @@ class TestExcelImportXLSAll(unittest.TestCase):
                 # xls_path = xls_path.replace(" ","\ ")
                 # print("xls_path : " ,xls_path)
                 csv_path = xls_path.replace(xls_ext,".csv")
-                command = '"./venv/Scripts/python.exe" ./xls_to_csv.py ./xls/%s ./csv/%s' % (xls_path, csv_path)
+                command = '"./venv/Scripts/python.exe" ./xls_to_csv.py "./excel/%s" "./csv2/%s"' % (xls_path, csv_path)
                 # code , output = self.run_command_sync(command)
 
                 # shutil.copyfile("./excel/"+xls_path, "./xls/"+ xls_path.replace(" ","_"))
                 # print("./excel/"+xls_path, " -> ./xls/"+ xls_path.replace(" ","_"))
 
-                # print(command)
+                print(command)
                 output = subprocess.getoutput(command)
                 print(f"output = {output} ")
                 # time.sleep(5)

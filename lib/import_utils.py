@@ -141,12 +141,29 @@ def get_table_columns(row_set) -> list:
     # offset, headers2 = messytables.headers_guess(row_set.sample, 4)
 
     # print(list(headers1, headers2))
-    offset, headers = messytables.headers_guess(row_set.sample, tolerance=1)
-    if(not like_header_col(headers)):
-        log.info(headers)
-        log.info("Not like header") 
-        offset, headers = messytables.headers_guess(
-            row_set.sample, tolerance=2)
+
+    # OlD way 
+    log.info("Started tolerance")
+    for tolerance in range(20):
+        log.info("tolerance = " + str(tolerance))
+        offset, headers = messytables.headers_guess(row_set.sample, tolerance=tolerance)
+        if(not like_header_col(headers)):
+            log.info(headers)
+            log.info("Not like header") 
+            offset, headers = messytables.headers_guess(
+                row_set.sample, tolerance=tolerance)
+        else:
+            break
+    log.info("End  tolerance ")
+    # OlD way 
+    # tolerance=1
+    # offset, headers = messytables.headers_guess(row_set.sample, tolerance=tolerance)
+    # if(not like_header_col(headers)):
+    #     log.info(headers)
+    #     log.info("Not like header") 
+    #     tolerance = 2
+    #     offset, headers = messytables.headers_guess(
+    #         row_set.sample, tolerance=tolerance)
 
     row_set.register_processor(messytables.headers_processor(headers))
 
@@ -169,7 +186,7 @@ def like_header_col(row):
 
     for row_text in row:
         row_text = prepar_header_col(row_text)
-        if (row_text.find("msrp") >= 0 or row_text.find("part") >= 0 or row_text.find("price") >= 0 or row_text.find("cost") >= 0 or row_text.find("model") >= 0 or row_text.find("type") >= 0):
+        if (row_text.find("product") >= 0 or row_text.find("description") >= 0 or row_text.find("item") >= 0 or row_text.find("msrp") >= 0 or row_text.find("part") >= 0 or row_text.find("price") >= 0 or row_text.find("cost") >= 0 or row_text.find("model") >= 0 or row_text.find("type") >= 0):
             return True
 
     return False
