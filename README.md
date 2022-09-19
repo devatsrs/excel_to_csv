@@ -56,6 +56,7 @@ export PATH="$HOME/.local/bin:$PATH"
 
     python -m unittest -v runtests/test_import_xls.py
     python -m unittest discover -s  runtests/ -v    
+    python -m unittest -v runtests/test_import_xls_all.py
     
 # Execute
 

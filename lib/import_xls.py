@@ -14,11 +14,13 @@ import messytables.excel
 import messytables.jts
 import six
 from six.moves import zip
+from lib.log  import Log
 
 from lib import parse_data
 from lib import import_utils
 
 log = logging.getLogger(__name__)
+# log = Log()
 
 
 def import_file(file_source, parse_options):
@@ -98,7 +100,7 @@ def parse_file(file_path, orig_name, parse_options=None, table_name_hint=None, n
             return parse_open_file(f, orig_name, table_name_hint=table_name_hint)
         except Exception as e:
             # Log the full error, but simplify the thrown error to omit the unhelpful extra args.
-            log.info("import_xls parse_file failed: %s", e)
+            log.info("import_xls parse_file failed: %s" %e)
             if six.PY2 and e.args and isinstance(e.args[0], six.string_types):
                 raise Exception(e.args[0])
             raise
@@ -124,11 +126,15 @@ def parse_open_file(file_obj, orig_name, table_name_hint=None):
         # In addition, always prefer UTF8 over ASCII.
         if table_set.encoding == 'ascii':
             table_set.encoding = 'utf8'
+    
 
     export_list = []
     # A table set is a collection of tables:
     for row_set in table_set.tables:
         table_name = row_set.name
+
+        log.debug("---SheetName---")
+        log.debug(table_name)
 
         if isinstance(row_set, messytables.CSVRowSet):
             # For csv files, we can do better for table_name by using the filename.
@@ -177,8 +183,8 @@ def parse_open_file(file_obj, orig_name, table_name_hint=None):
             if not isinstance(header, six.string_types):
                 headers[i] = six.text_type(header)
 
-        log.debug("Guessed data_offset as %s", data_offset)
-        log.debug("Guessed headers as: %s", headers)
+        log.debug("Guessed data_offset as %s" %data_offset)
+        log.debug("Guessed headers as: %s" %headers)
 
         row_set.register_processor(messytables.offset_processor(data_offset))
 
@@ -200,10 +206,9 @@ def parse_open_file(file_obj, orig_name, table_name_hint=None):
             # Don't add tables with no columns.
             continue
 
-        log.info("Output table %r with %d columns",
-                 table_name, len(column_metadata))
+        log.info("Output table %r with %d columns" % (table_name, len(column_metadata)))
         for c in column_metadata:
-            log.debug("Output column %s", c)
+            log.debug("Output column %s" %c)
         export_list.append({
             "table_name": table_name,
             "column_metadata": column_metadata,

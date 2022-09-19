@@ -1,7 +1,10 @@
+import  subprocess
 import calendar
 import datetime
+import json
 import math
 import os
+import re
 import unittest
 import xls_to_csv
 from collections import Counter
@@ -28,7 +31,7 @@ class TestExcelImportXLS(unittest.TestCase):
         source_xls_path, xls_filename = self._get_fixture(source_file_path)
         dest_csv_path, csv_filename = self._get_fixture('test.csv')
         xlsObj = xls_to_csv.XlsToCsv(source_xls_path, dest_csv_path)
-        xlsObj.convert_n_load_parsed_data()
+        xlsObj.parsed_excel()
         xlsObj.prepare_csv_rows()
         self.result_rows = xlsObj.csv_rows
         self.result_headers = xlsObj.all_sheet_headers
@@ -80,6 +83,57 @@ class TestExcelImportXLS(unittest.TestCase):
         # print(SheetName)        Counter({'AKG': 5, 'DBX': 5, 'AMX': 3, 'BSS': 3, 'Crown': 2})
         self.assertEqual(SheetName['Wired Microphones-Recording'], 1)
         self.assertEqual(SheetName["USB"], 4)
+
+
+    def run_command_sync(self,cmd):
+        """
+        Run a command using the synchronous `subprocess.run`.
+        The asynchronous `run_command_async` should be preferred,
+        but does not work on Windows, so use this as a fallback.
+
+        Parameters
+        ----------
+        iterable
+            An iterable of command-line arguments to run in the subprocess.
+
+        Returns
+        -------
+        A tuple containing the (return code, stdout)
+        """
+        try:
+            process = subprocess.run(cmd, stdout=subprocess.PIPE,shell=True, check=True,capture_output=True)
+        except subprocess.CalledProcessError as err:
+            pass
+        code = process.returncode
+        out = process.stdout.decode('utf-8')
+        return (code, out) 
+
+    def test_run_all_excel(self):
+
+        # folder path
+        dir_path = r'D:\\laragon\\www\\excel_to_csv\\excel\\'
+
+        # Iterate directory
+        for xls_path in os.listdir(dir_path):
+            # check if current path is a file
+            if ( xls_path != ".gitkeep" and os.path.isfile(os.path.join(dir_path, xls_path)) ):
+                # res.append(path)
+                print(xls_path)
+                xls_path = re.escape(xls_path)
+                csv_path = xls_path.replace("xlsx","csv").replace("xlsm","csv")
+                command = "python ./xls_to_csv.py ./excel/%s ./csv/%s" % (xls_path, csv_path)
+                # code , output = self.run_command_sync(command)
+                output = subprocess.run(command,shell=True, check=True)
+                print(output)
+                exit()
+                # output = os.popen(command).read()
+                result = json.loads(output)
+                print(command)
+                print(output)
+                if(result["status"] !="success"):
+                    print("CSV Failed")
+                    print(command)
+                    print(output)
 
 
 if __name__ == '__main__':

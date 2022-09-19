@@ -76,16 +76,19 @@ sudo -u daemon /opt/bitnami/apache/htdocs/excel_to_csv/venv/bin/python3 /opt/bit
 
 /opt/bitnami/apache/htdocs/wp-content/uploads/sites/7/2022/04
 
------------- Dev
+------------ Win Dev
 python -m venv venv
 source ./venv/Scripts/activate
 venv/Scripts/python -m pip install --upgrade pip
 venv/Scripts/python  -m pip install -r requirements.txt
 
 --- Docker 
-python -m venv venv
-source ./venv/bin/activate
-./venv/bin/python -m pip install --upgrade pip
-./venv/bin/python  -m pip install -r requirements.txt
-python ./xls_to_csv.py ./excel/test_excel.xlsx ./csv/test_excel.csv
+    cd /var/www/excel_to_csv
+    rm -rf ./venv
+    python3 -m venv venv
+    source ./venv/bin/activate
+    python3 -m pip install --upgrade pip
+    python3 -m pip install -r requirements.txt
+    python3 ./xls_to_csv.py ./excel/test_excel.xlsx ./csv/test_excel.csv
+    deactivate
 
