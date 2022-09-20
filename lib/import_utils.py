@@ -183,12 +183,15 @@ def get_table_columns(row_set) -> list:
 
 
 def like_header_col(row):
-
+    ''' Search keywords in columns text to identify as column name '''
+    
+    search = [ "product", "description", "item", "msrp", "part", "price", "cost", "model", "type"]
     for row_text in row:
         row_text = prepar_header_col(row_text)
-        if (row_text.find("product") >= 0 or row_text.find("description") >= 0 or row_text.find("item") >= 0 or row_text.find("msrp") >= 0 or row_text.find("part") >= 0 or row_text.find("price") >= 0 or row_text.find("cost") >= 0 or row_text.find("model") >= 0 or row_text.find("type") >= 0):
+        words = row_text.split(" ")
+        if any(word in search for word in words):
             return True
-
+        return False
     return False
 
 
