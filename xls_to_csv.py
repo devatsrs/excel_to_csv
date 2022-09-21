@@ -18,6 +18,8 @@ class XlsToCsv():
         self.header = dict([])
         self.csv_rows = []
         self.response = {}
+        self.is_complex = False
+
         self.ALLOWED_BLANK_COL_NAMES = 50 # percentage 
         self.skip_sheets_list = [
             "Legal",  # Shure
@@ -144,10 +146,7 @@ class XlsToCsv():
                     self.log.debug(len(empty_cols_found))
                     self.log.debug(empty_cols_found)
 
-                    self.response["status"] = "failed"
-                    self.response["message"] = "Complex excel detected"
-                    self.response["file"] = self.source_xls_path
-                    
+                    self.is_complex = True
 
         # exit()
 
@@ -275,7 +274,7 @@ class XlsToCsv():
                     #     if (str(row_text).lower() in self.all_sheet_headers):
                     #         header_col_name_found = True
                     #         break
-                    if(self.is_header_col(row)):
+                    if(not self.is_complex and self.is_header_col(row)):
                         self.log.debug("header row detected " + str(row))
                         continue
 
@@ -403,7 +402,10 @@ if __name__ == '__main__':
     logging = Log()
     logging.info("CSV conversion done!")
 
-    if(xlsObj.response):
+    if(xlsObj.is_complex):
+        xlsObj.response["status"] = "failed"
+        xlsObj.response["message"] = "Complex excel detected"
+        xlsObj.response["file"] = xlsObj.source_xls_path
         print(json.dumps(xlsObj.response))
     else:        
         xlsObj.response["status"] = "success"
